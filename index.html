@@ -8,15 +8,19 @@ body{margin:0;padding:24px;font-family:'Sarabun','Segoe UI',Tahoma,sans-serif;ba
 .wrap{max-width:980px;margin:auto}
 .hd{background:var(--aia);color:#fff;border-radius:14px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
 .hd h1{margin:0;font-size:22px}.hd p{margin:4px 0 0;opacity:.9;font-size:14px}
-.cust{background:rgba(255,255,255,.18);padding:8px 14px;border-radius:20px;font-size:14px}
+.sw{display:flex;background:rgba(255,255,255,.18);border-radius:22px;padding:4px;gap:4px}
+.sw button{border:0;background:transparent;color:#fff;padding:7px 14px;border-radius:18px;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}
+.sw button.on{background:#fff;color:var(--aia);font-weight:700}
 .base{margin:16px 0;background:var(--card);border:1px solid var(--b);border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .base b{color:var(--aia);font-size:18px}
+.warn{margin:0 0 20px;background:#fff7e6;border:1px solid #f59e0b;border-left:5px solid #f59e0b;border-radius:12px;padding:12px 16px;font-size:14px;color:#92400e}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
 .c{background:var(--card);border:1px solid var(--b);border-radius:14px;padding:20px;position:relative;display:flex;flex-direction:column}
 .c.hl{border:2px solid var(--aia);box-shadow:0 6px 18px rgba(211,17,69,.15)}
 .tag{position:absolute;top:-12px;left:20px;background:var(--aia);color:#fff;font-size:12px;padding:3px 12px;border-radius:12px}
 .tag.g{background:#16a34a}.tag.b{background:#2563eb}
 .c h2{margin:6px 0 2px;font-size:19px}.sub{color:var(--t2);font-size:13px;margin-bottom:14px}
+.lump{background:var(--aia-bg);color:var(--aia);border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:10px}
 .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--b);font-size:14px}
 .row span:first-child{color:var(--t2)}.row span:last-child{font-weight:600;text-align:right}
 .no{color:var(--m)!important;font-weight:400!important}
@@ -26,47 +30,48 @@ table{width:100%;border-collapse:collapse;margin-top:20px;background:var(--card)
 th{background:var(--aia-bg);color:var(--aia);padding:10px;text-align:center}
 td{padding:10px;border-bottom:1px solid var(--b);text-align:center}td:first-child{text-align:left;color:var(--t2)}
 .note{margin-top:16px;font-size:12px;color:var(--m);line-height:1.6}
-@media print{body{background:#fff;padding:0}.c,.base,table{break-inside:avoid}}
+@media print{body{background:#fff;padding:0}.sw button:not(.on){display:none}.c,.base,table{break-inside:avoid}}
 </style></head><body><div class="wrap">
 
 <div class="hd"><div><h1>🩺 สรุปแผนประกันสุขภาพ AIA</h1><p>เปรียบเทียบ 3 แผน เพื่อพิจารณาเลือก</p></div>
-<div class="cust">👩 ลูกค้าหญิง · อายุ 43 ปี</div></div>
+<div class="sw"><button data-k="f43" class="on">👩 หญิง · 43 ปี</button><button data-k="m25">👨 ชาย · 25 ปี</button></div></div>
 
 <div class="base"><span>📋 สัญญาหลัก (ทุนประกันขั้นต่ำ 100,000 บาท)</span><span>เบี้ย <b>2,539</b> บาท/ปี · รวมอยู่ในทุกแผน</span></div>
 
-<div class="grid">
- <div class="c"><span class="tag g">💰 ประหยัดสุด</span>
-  <h2>Health Saver 4000</h2><div class="sub">ครบทั้ง IPD + OPD ในงบสบายกระเป๋า</div>
-  <div class="row"><span>ค่าห้อง/วัน</span><span>4,000</span></div>
-  <div class="row"><span>OPD</span><span>1,500 × 30 ครั้ง/ปี</span></div>
-  <div class="row"><span>เบี้ยสัญญาเพิ่มเติม</span><span>26,500</span></div>
-  <div class="row"><span>เบี้ยสัญญาหลัก</span><span>2,539</span></div>
-  <div class="tot"><div class="y">29,039</div><div class="mo">บาท/ปี · เฉลี่ย ~2,420/เดือน</div></div></div>
+<div class="warn">⏰ <b>เปิดขายถึง 30 พ.ย. 2569 เท่านั้น</b> — หลังจากนั้นจะปิดการขาย และจะมีแผนใหม่มาแทน ซึ่งอาจมี<b>ค่าใช้จ่ายร่วม (Co-payment) เป็น %</b></div>
 
- <div class="c"><span class="tag b">🏥 เน้นผู้ป่วยใน</span>
-  <h2>Health Happy 15 ล้าน</h2><div class="sub">วงเงินสูง ห้องดี ไม่มี OPD</div>
-  <div class="row"><span>วงเงินคุ้มครอง</span><span>15 ล้าน</span></div>
-  <div class="row"><span>ค่าห้อง/วัน</span><span>6,000</span></div>
-  <div class="row"><span>OPD</span><span class="no">ไม่คุ้มครอง</span></div>
-  <div class="row"><span>เบี้ยสัญญาเพิ่มเติม</span><span>42,900</span></div>
-  <div class="row"><span>เบี้ยสัญญาหลัก</span><span>2,539</span></div>
-  <div class="tot"><div class="y">45,439</div><div class="mo">บาท/ปี · เฉลี่ย ~3,787/เดือน</div></div></div>
+<div class="grid" id="grid"></div>
+<table id="tbl"></table>
 
- <div class="c hl"><span class="tag">⭐ คุ้มครองครบที่สุด</span>
-  <h2>Health Happy 25 ล้าน</h2><div class="sub">วงเงินสูงสุด ห้องดีที่สุด + OPD</div>
-  <div class="row"><span>วงเงินคุ้มครอง</span><span>25 ล้าน</span></div>
-  <div class="row"><span>ค่าห้อง/วัน</span><span>9,000</span></div>
-  <div class="row"><span>OPD</span><span>2,000 × 30 ครั้ง/ปี</span></div>
-  <div class="row"><span>เบี้ยสัญญาเพิ่มเติม</span><span>53,600</span></div>
-  <div class="row"><span>เบี้ยสัญญาหลัก</span><span>2,539</span></div>
-  <div class="tot"><div class="y">56,139</div><div class="mo">บาท/ปี · เฉลี่ย ~4,678/เดือน</div></div></div>
+<div class="note" id="note"></div>
 </div>
-
-<table><tr><th>รายการ</th><th>Health Saver 4000</th><th>Health Happy 15 ล้าน</th><th>Health Happy 25 ล้าน</th></tr>
-<tr><td>ค่าห้อง/วัน</td><td>4,000</td><td>6,000</td><td>9,000</td></tr>
-<tr><td>OPD สูงสุด/ปี</td><td>45,000</td><td>–</td><td>60,000</td></tr>
-<tr><td>เบี้ยรวม/ปี</td><td><b>29,039</b></td><td><b>45,439</b></td><td><b>56,139</b></td></tr>
-<tr><td>ส่วนต่างจากแผนประหยัดสุด</td><td>–</td><td>+16,400</td><td>+27,100</td></tr></table>
-
-<div class="note">* เบี้ยประกันสำหรับเพศหญิง อายุ 43 ปี เป็นตัวเลขประมาณการ อาจเปลี่ยนแปลงตามการพิจารณารับประกันของบริษัท<br>* OPD สูงสุด/ปี = วงเงินต่อครั้ง × จำนวนครั้ง · เบี้ยรายเดือนเป็นค่าเฉลี่ย (เบี้ยรายปี ÷ 12)<br>* โปรดศึกษารายละเอียดความคุ้มครองและเงื่อนไขในกรมธรรม์ก่อนตัดสินใจ</div>
-</div></body></html>
+<script>
+const BASE=2539;
+const D={
+ f43:{lbl:'เพศหญิง อายุ 43 ปี',saver:26500,h15:42900,h25:53600},
+ m25:{lbl:'เพศชาย อายุ 25 ปี',saver:13400,h15:21600,h25:28000}
+};
+const f=n=>n.toLocaleString('en-US');
+const LUMP='<div class="lump">✨ <b>แบบเหมาจ่าย</b> — ทุนสูง ไม่ต้องกังวลวงเงินแยกรายการ</div>';
+function tot(r){const t=r+BASE;return `<div class="tot"><div class="y">${f(t)}</div><div class="mo">บาท/ปี · เฉลี่ย ~${f(Math.round(t/12))}/เดือน</div></div>`}
+function row(a,b,no){return `<div class="row"><span>${a}</span><span${no?' class="no"':''}>${b}</span></div>`}
+function render(k){
+ const d=D[k];
+ document.getElementById('grid').innerHTML=`
+ <div class="c"><span class="tag g">💰 ประหยัดสุด</span><h2>Health Saver 4000</h2><div class="sub">ครบทั้ง IPD + OPD ในงบสบายกระเป๋า</div>
+ ${row('ค่าห้อง/วัน','4,000')}${row('OPD','1,500 × 30 ครั้ง/ปี')}${row('เบี้ยสัญญาเพิ่มเติม',f(d.saver))}${row('เบี้ยสัญญาหลัก',f(BASE))}${tot(d.saver)}</div>
+ <div class="c"><span class="tag b">🏥 เน้นผู้ป่วยใน</span><h2>Health Happy 15 ล้าน</h2><div class="sub">วงเงินสูง ห้องดี ไม่มี OPD</div>${LUMP}
+ ${row('วงเงินคุ้มครอง','15 ล้าน')}${row('ค่าห้อง/วัน','6,000')}${row('OPD','ไม่คุ้มครอง',1)}${row('เบี้ยสัญญาเพิ่มเติม',f(d.h15))}${row('เบี้ยสัญญาหลัก',f(BASE))}${tot(d.h15)}</div>
+ <div class="c hl"><span class="tag">⭐ คุ้มครองครบที่สุด</span><h2>Health Happy 25 ล้าน</h2><div class="sub">วงเงินสูงสุด ห้องดีที่สุด + OPD</div>${LUMP}
+ ${row('วงเงินคุ้มครอง','25 ล้าน')}${row('ค่าห้อง/วัน','9,000')}${row('OPD','2,000 × 30 ครั้ง/ปี')}${row('เบี้ยสัญญาเพิ่มเติม',f(d.h25))}${row('เบี้ยสัญญาหลัก',f(BASE))}${tot(d.h25)}</div>`;
+ document.getElementById('tbl').innerHTML=`<tr><th>รายการ</th><th>Health Saver 4000</th><th>Health Happy 15 ล้าน</th><th>Health Happy 25 ล้าน</th></tr>
+ <tr><td>ค่าห้อง/วัน</td><td>4,000</td><td>6,000</td><td>9,000</td></tr>
+ <tr><td>OPD สูงสุด/ปี</td><td>45,000</td><td>–</td><td>60,000</td></tr>
+ <tr><td>เบี้ยรวม/ปี</td><td><b>${f(d.saver+BASE)}</b></td><td><b>${f(d.h15+BASE)}</b></td><td><b>${f(d.h25+BASE)}</b></td></tr>
+ <tr><td>ส่วนต่างจากแผนประหยัดสุด</td><td>–</td><td>+${f(d.h15-d.saver)}</td><td>+${f(d.h25-d.saver)}</td></tr>`;
+ document.getElementById('note').innerHTML=`* เบี้ยประกันสำหรับ${d.lbl} เป็นตัวเลขประมาณการ อาจเปลี่ยนแปลงตามการพิจารณารับประกันของบริษัท<br>* OPD สูงสุด/ปี = วงเงินต่อครั้ง × จำนวนครั้ง · เบี้ยรายเดือนเป็นค่าเฉลี่ย (เบี้ยรายปี ÷ 12)<br>* โปรดศึกษารายละเอียดความคุ้มครองและเงื่อนไขในกรมธรรม์ก่อนตัดสินใจ`;
+ document.querySelectorAll('.sw button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
+}
+document.querySelectorAll('.sw button').forEach(b=>b.onclick=()=>render(b.dataset.k));
+render('f43');
+</script></body></html>
