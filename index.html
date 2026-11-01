@@ -30,6 +30,8 @@ table{width:100%;border-collapse:collapse;margin-top:20px;background:var(--card)
 th{background:var(--aia-bg);color:var(--aia);padding:10px;text-align:center}
 td{padding:10px;border-bottom:1px solid var(--b);text-align:center}td:first-child{text-align:left;color:var(--t2)}
 .note{margin-top:16px;font-size:12px;color:var(--m);line-height:1.6}
+.nb{border:1px solid var(--aia);background:var(--aia-bg);color:var(--aia);padding:8px 14px;border-radius:18px;font:inherit;font-size:14px;cursor:pointer;margin:4px 6px 0 0}
+.nb:hover{background:var(--aia);color:#fff}
 @media print{body{background:#fff;padding:0}.sw button:not(.on){display:none}.c,.base,table{break-inside:avoid}}
 </style></head><body><div class="wrap">
 
@@ -44,8 +46,20 @@ td{padding:10px;border-bottom:1px solid var(--b);text-align:center}td:first-chil
 <table id="tbl"></table>
 
 <div class="note" id="note"></div>
+
+<div style="margin-top:20px;background:var(--card);border:1px solid var(--b);border-radius:12px;padding:16px 18px">
+ <b style="color:var(--aia)">🏥 AIA Smart Network — รพ. รัฐในเครือข่าย</b>
+ <div style="font-size:13px;color:var(--t2);margin:4px 0 10px">รพ. ในเครือข่าย ไม่มีค่าใช้จ่ายร่วม (Health Starter)</div>
+ <button class="nb" onclick="openNet('smart_network_bkk.pdf','กรุงเทพฯ และปริมณฑล')">📍 กรุงเทพฯ และปริมณฑล</button>
+ <button class="nb" onclick="openNet('smart_network_provinces.pdf','ต่างจังหวัด')">🗺️ ต่างจังหวัด</button>
+</div>
+<div id="mdl" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99;padding:20px">
+ <div style="background:#fff;border-radius:12px;max-width:900px;height:100%;margin:auto;display:flex;flex-direction:column;overflow:hidden">
+  <div style="background:var(--aia);color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center"><b id="mt"></b><span><a id="ml" target="_blank" style="color:#fff;margin-right:14px">เปิดแท็บใหม่ ↗</a><button onclick="mdl.style.display='none'" style="border:0;background:none;color:#fff;font-size:20px;cursor:pointer">✕</button></span></div>
+  <iframe id="mf" style="flex:1;border:0;width:100%"></iframe></div></div>
 </div>
 <script>
+function openNet(f,t){mt.textContent='🏥 AIA Smart Network · '+t;mf.src=f;ml.href=f;mdl.style.display='block'}
 const BASE=2539;
 const D={
  f43:{lbl:'เพศหญิง อายุ 43 ปี',saver:26500,h15:42900,h25:53600,starter:19500},
