@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>สรุปแผนประกันสุขภาพ AIA</title>
+<style>
+:root{--aia:#D31145;--aia-bg:#fdecf1;--t:#1a1a1a;--t2:#5e5e5e;--m:#9ca3af;--b:rgba(0,0,0,.1);--card:#fff;--bg:#faf9fc}
+*{box-sizing:border-box}
+body{margin:0;padding:24px;font-family:'Sarabun','Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--t)}
+.wrap{max-width:980px;margin:auto}
+.hd{background:var(--aia);color:#fff;border-radius:14px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.hd h1{margin:0;font-size:22px}.hd p{margin:4px 0 0;opacity:.9;font-size:14px}
+.cust{background:rgba(255,255,255,.18);padding:8px 14px;border-radius:20px;font-size:14px}
+.base{margin:16px 0;background:var(--card);border:1px solid var(--b);border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.base b{color:var(--aia);font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.c{background:var(--card);border:1px solid var(--b);border-radius:14px;padding:20px;position:relative;display:flex;flex-direction:column}
+.c.hl{border:2px solid var(--aia);box-shadow:0 6px 18px rgba(211,17,69,.15)}
+.tag{position:absolute;top:-12px;left:20px;background:var(--aia);color:#fff;font-size:12px;padding:3px 12px;border-radius:12px}
+.tag.g{background:#16a34a}.tag.b{background:#2563eb}
+.c h2{margin:6px 0 2px;font-size:19px}.sub{color:var(--t2);font-size:13px;margin-bottom:14px}
+.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--b);font-size:14px}
+.row span:first-child{color:var(--t2)}.row span:last-child{font-weight:600;text-align:right}
+.no{color:var(--m)!important;font-weight:400!important}
+.tot{margin-top:auto;padding-top:14px;text-align:center}
+.tot .y{font-size:28px;font-weight:700;color:var(--aia)}.tot .mo{font-size:13px;color:var(--t2)}
+table{width:100%;border-collapse:collapse;margin-top:20px;background:var(--card);border-radius:12px;overflow:hidden;font-size:14px}
+th{background:var(--aia-bg);color:var(--aia);padding:10px;text-align:center}
+td{padding:10px;border-bottom:1px solid var(--b);text-align:center}td:first-child{text-align:left;color:var(--t2)}
+.note{margin-top:16px;font-size:12px;color:var(--m);line-height:1.6}
+@media print{body{background:#fff;padding:0}.c,.base,table{break-inside:avoid}}
+</style></head><body><div class="wrap">
+
+<div class="hd"><div><h1>🩺 สรุปแผนประกันสุขภาพ AIA</h1><p>เปรียบเทียบ 3 แผน เพื่อพิจารณาเลือก</p></div>
+<div class="cust">👩 ลูกค้าหญิง · อายุ 43 ปี</div></div>
+
+<div class="base"><span>📋 สัญญาหลัก (ทุนประกันขั้นต่ำ 100,000 บาท)</span><span>เบี้ย <b>2,539</b> บาท/ปี · รวมอยู่ในทุกแผน</span></div>
+
+<div class="grid">
+ <div class="c"><span class="tag g">💰 ประหยัดสุด</span>
+  <h2>Health Saver 4000</h2><div class="sub">ครบทั้ง IPD + OPD ในงบสบายกระเป๋า</div>
+  <div class="row"><span>ค่าห้อง/วัน</span><span>4,000</span></div>
+  <div class="row"><span>OPD</span><span>1,500 × 30 ครั้ง/ปี</span></div>
+  <div class="row"><span>เบี้ยสัญญาเพิ่มเติม</span><span>26,500</span></div>
+  <div class="row"><span>เบี้ยสัญญาหลัก</span><span>2,539</span></div>
+  <div class="tot"><div class="y">29,039</div><div class="mo">บาท/ปี · เฉลี่ย ~2,420/เดือน</div></div></div>
+
+ <div class="c"><span class="tag b">🏥 เน้นผู้ป่วยใน</span>
+  <h2>Health Happy 15 ล้าน</h2><div class="sub">วงเงินสูง ห้องดี ไม่มี OPD</div>
+  <div class="row"><span>วงเงินคุ้มครอง</span><span>15 ล้าน</span></div>
+  <div class="row"><span>ค่าห้อง/วัน</span><span>6,000</span></div>
+  <div class="row"><span>OPD</span><span class="no">ไม่คุ้มครอง</span></div>
+  <div class="row"><span>เบี้ยสัญญาเพิ่มเติม</span><span>42,900</span></div>
+  <div class="row"><span>เบี้ยสัญญาหลัก</span><span>2,539</span></div>
+  <div class="tot"><div class="y">45,439</div><div class="mo">บาท/ปี · เฉลี่ย ~3,787/เดือน</div></div></div>
+
+ <div class="c hl"><span class="tag">⭐ คุ้มครองครบที่สุด</span>
+  <h2>Health Happy 25 ล้าน</h2><div class="sub">วงเงินสูงสุด ห้องดีที่สุด + OPD</div>
+  <div class="row"><span>วงเงินคุ้มครอง</span><span>25 ล้าน</span></div>
+  <div class="row"><span>ค่าห้อง/วัน</span><span>9,000</span></div>
+  <div class="row"><span>OPD</span><span>2,000 × 30 ครั้ง/ปี</span></div>
+  <div class="row"><span>เบี้ยสัญญาเพิ่มเติม</span><span>53,600</span></div>
+  <div class="row"><span>เบี้ยสัญญาหลัก</span><span>2,539</span></div>
+  <div class="tot"><div class="y">56,139</div><div class="mo">บาท/ปี · เฉลี่ย ~4,678/เดือน</div></div></div>
+</div>
+
+<table><tr><th>รายการ</th><th>Health Saver 4000</th><th>Health Happy 15 ล้าน</th><th>Health Happy 25 ล้าน</th></tr>
+<tr><td>ค่าห้อง/วัน</td><td>4,000</td><td>6,000</td><td>9,000</td></tr>
+<tr><td>OPD สูงสุด/ปี</td><td>45,000</td><td>–</td><td>60,000</td></tr>
+<tr><td>เบี้ยรวม/ปี</td><td><b>29,039</b></td><td><b>45,439</b></td><td><b>56,139</b></td></tr>
+<tr><td>ส่วนต่างจากแผนประหยัดสุด</td><td>–</td><td>+16,400</td><td>+27,100</td></tr></table>
+
+<div class="note">* เบี้ยประกันสำหรับเพศหญิง อายุ 43 ปี เป็นตัวเลขประมาณการ อาจเปลี่ยนแปลงตามการพิจารณารับประกันของบริษัท<br>* OPD สูงสุด/ปี = วงเงินต่อครั้ง × จำนวนครั้ง · เบี้ยรายเดือนเป็นค่าเฉลี่ย (เบี้ยรายปี ÷ 12)<br>* โปรดศึกษารายละเอียดความคุ้มครองและเงื่อนไขในกรมธรรม์ก่อนตัดสินใจ</div>
+</div></body></html>
