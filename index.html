@@ -16,7 +16,7 @@
 </div>
 
 </div>
-<script src="data/customers.js"></script><script src="js/network.js"></script>
+<script src="data/customers.js"></script><script src="js/config-sheet.js" onerror="/* no Sheet config */"></script><script src="js/network.js"></script>
 <script>
 const q=new URLSearchParams(location.search);
 const OLD={f43:'f43-k7m2q',m25:'m25-x9p4t'};
@@ -34,17 +34,40 @@ function popup(msg,{title='แจ้งเตือน',confirm=false}={}){retur
  ppo.onclick=()=>done(true);ppc.onclick=()=>done(false);p.onclick=e=>{if(e.target===p)done(false)};document.addEventListener('keydown',k);ppo.focus();})}
 const LS='ipf_customers_v1';
 const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-const base=location.href.split(/[?#]/)[0].replace(/index\.html$/,'')+'plan.html';
+const base=location.href.split(/[?#]/)[0].replace(/index\.html$/,'')+'plans/health.html';
 const PAGES=Object.entries(typeof CUSTOMERS!=='undefined'?CUSTOMERS:{});
-function list(){return JSON.parse(localStorage.getItem(LS)||'[]')}
-function link(c){if(c.page&&CUSTOMERS[c.page]&&CUSTOMERS[c.page].url)return base.replace(/plan\.html$/,'')+CUSTOMERS[c.page].url;if(c.page&&CUSTOMERS[c.page])return base+'?id='+c.page+(c.name?'&n='+encodeURIComponent(c.name):'');return base+'?d='+enc(c)}
+// Nov 16 2026: customers live in Google Sheet (IPF Customers API); localStorage = offline cache. pages = many page ids.
+let _CL=null,_sheetOK=false;
+function list(){if(_CL)return _CL;return JSON.parse(localStorage.getItem(LS)||'[]')}
+function pagesOf(c){return Array.isArray(c.pages)&&c.pages.length?c.pages:(c.page?[c.page]:[])}
+function cid(c){return c.id||(c.id='c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6))}
+async function api(body){const W=window.IPF_SHEET;if(!W||!W.endpoint||!W.token)throw new Error('no config');body.token=W.token;
+ let last;for(const w of [0,2500,6000]){if(w)await new Promise(r=>setTimeout(r,w));try{const r=await fetch(W.endpoint,{method:'POST',body:JSON.stringify(body)});const j=await r.json();if(!j.ok)throw new Error(j.error||'API');return j}catch(e){last=e}}throw last}
+async function loadSheet(){const st=document.getElementById('sst');try{if(st)st.textContent='⏳ กำลังโหลดจาก Sheet…';
+ const j=await api({action:'get'});let rows=j.rows||[];_sheetOK=true;
+ const local=JSON.parse(localStorage.getItem(LS)||'[]');
+ if(!rows.length&&local.length){local.forEach(c=>{cid(c);c.pages=pagesOf(c)});await api({action:'save',rows:local});rows=local;if(st)st.textContent='✅ ย้ายรายชื่อ '+local.length+' คนขึ้น Sheet แล้ว'}
+ else if(st)st.textContent='✅ ซิงก์กับ Sheet แล้ว · '+rows.length+' คน';
+ _CL=rows;localStorage.setItem(LS,JSON.stringify(rows));drawA()}catch(e){if(st)st.textContent='⚠️ ใช้ข้อมูลในเครื่อง (Sheet: '+e.message+')'}}
+async function saveL(L){_CL=L;localStorage.setItem(LS,JSON.stringify(L));drawA();if(!_sheetOK)return;const st=document.getElementById('sst');
+ try{if(st)st.textContent='⏳ กำลังบันทึก…';await api({action:'save',rows:L});if(st)st.textContent='✅ บันทึกลง Sheet แล้ว'}catch(e){if(st)st.textContent='⚠️ บันทึกลง Sheet ไม่สำเร็จ: '+e.message}}
+function link(c,pg){pg=pg||pagesOf(c)[0];c=Object.assign({},c,{page:pg});if(c.page&&CUSTOMERS[c.page]&&CUSTOMERS[c.page].url){const u=CUSTOMERS[c.page].url,q=[];if(c.name)q.push('n='+encodeURIComponent(c.name));if(c.age!=null&&c.age!=='')q.push('a='+encodeURIComponent(c.age));if(c.icon)q.push('g='+encodeURIComponent(c.icon));return base.replace(/plans\/health\.html$/,'')+u+(q.length?(u.includes('?')?'&':'?')+q.join('&'):'')}if(c.page&&CUSTOMERS[c.page])return base+'?id='+c.page+(c.name?'&n='+encodeURIComponent(c.name):'');return base+'?d='+enc(c)}
 function pgName(id){const p=CUSTOMERS[id];return p?p.icon+' '+p.lbl:'⏳ ยังไม่มีหน้า'}
 function ageOf(s){const b=new Date(s),t=new Date();let a=t.getFullYear()-b.getFullYear();if(t.getMonth()<b.getMonth()||(t.getMonth()===b.getMonth()&&t.getDate()<b.getDate()))a--;return a}
 function drawA(){const L=list();
  if(!document.getElementById('ctcss')){const st=document.createElement('style');st.id='ctcss';st.textContent=`.ct{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}.ct th{text-align:left;font-weight:600;color:var(--t2);font-size:13px;padding:8px 10px;border-bottom:2px solid var(--b);background:transparent}.ct td{padding:9px 10px;border-bottom:1px solid var(--b);text-align:left;vertical-align:middle;color:var(--t)}.ct tr:hover td{background:var(--aia-bg)}.ct a.nm{color:var(--aia);font-weight:600;text-decoration:none}.ct a.nm:hover{text-decoration:underline}.ct .ac{text-align:right;white-space:nowrap}.ct .ib{border:1px solid var(--b);background:#fff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:14px;margin-left:4px}.ct .ib:hover{border-color:var(--aia)}.ct .np{color:var(--m)}`;document.head.appendChild(st)}
- document.getElementById('alist').innerHTML=L.length?`<table class="ct"><tr><th>ชื่อ</th><th>เพศ</th><th>อายุ</th><th>หน้าแผน</th><th class="ac"></th></tr>${L.map((c,i)=>`<tr><td><a class="nm" target="_blank" rel="noopener" href="${link(c)}">${c.name||'-'} ↗</a></td><td>${c.icon} ${c.sex==='m'?'ชาย':'หญิง'}</td><td>${c.age??''} ปี</td><td class="${CUSTOMERS[c.page]?'':'np'}">${pgName(c.page)}</td><td class="ac"><button class="ib" title="คัดลอกลิงก์" onclick="cp(${i})">📋</button><button class="ib" title="แก้ไข" onclick="openF(${i})">✏️</button><button class="ib" title="ลบ" onclick="dl(${i})">🗑</button></td></tr>`).join('')}</table>`:'<div style="color:var(--m);font-size:13px">ยังไม่มีลูกค้า</div>'}
+ const al=document.getElementById('alist');
+ if(!document.getElementById('aq')){al.insertAdjacentHTML('beforebegin','<input id="aq" placeholder="🔍 ค้นหา ชื่อ / เพศ / อายุ / หน้าแผน" oninput="drawA()" style="width:100%;padding:9px 12px;border:1px solid var(--b);border-radius:8px;font:inherit;margin:6px 0">')}
+ const q=(document.getElementById('aq').value||'').trim().toLowerCase().split(/\s+/).filter(Boolean);
+ const pgTxt=c=>pagesOf(c).map(pgName).join(' ');
+ const SV={name:c=>(c.name||'').toLowerCase(),sex:c=>c.sex||'',age:c=>+c.age||0,page:c=>pgTxt(c)};
+ let R=L.map((c,i)=>({c,i})).filter(({c})=>{const t=[c.name,c.sex==='m'?'ชาย':'หญิง',c.age,pgTxt(c)].join(' ').toLowerCase();return q.every(w=>t.includes(w))});
+ if(window._as){const f=SV[_as];R.sort((x,y)=>{const a=f(x.c),b=f(y.c);return (a>b?1:a<b?-1:0)*_ad})}
+ const th=(k,l)=>`<th style="cursor:pointer;user-select:none" onclick="aSort('${k}')">${l}${window._as===k?(_ad>0?' ▲':' ▼'):''}</th>`;
+ al.innerHTML=!L.length?'<div style="color:var(--m);font-size:13px">ยังไม่มีลูกค้า</div>':!R.length?'<div style="color:var(--m);font-size:13px;padding:8px 0">ไม่พบลูกค้าที่ค้นหา</div>':`<table class="ct"><tr>${th('name','ชื่อ')}${th('sex','เพศ')}${th('age','อายุ')}${th('page','หน้าแผนที่ผูก')}<th class="ac"></th></tr>${R.map(({c,i})=>`<tr><td><a class="nm" target="_blank" rel="noopener" href="${link(c)}">${c.name||'-'} ↗</a></td><td>${c.icon} ${c.sex==='m'?'ชาย':'หญิง'}</td><td>${c.age??''} ปี</td><td>${pagesOf(c).length?pagesOf(c).map(pg=>`<a class="${CUSTOMERS[pg]?'':'np'}" target="_blank" rel="noopener" href="${link(c,pg)}" style="display:block;text-decoration:none;color:inherit">${pgName(pg)} ↗</a>`).join(''):`<span class="np">${pgName('')}</span>`}</td><td class="ac"><button class="ib" title="คัดลอกลิงก์" onclick="cp(${i})">📋</button><button class="ib" title="แก้ไข" onclick="openF(${i})">✏️</button><button class="ib" title="ลบ" onclick="dl(${i})">🗑</button></td></tr>`).join('')}</table>`}
+function aSort(k){if(window._as!==k){window._as=k;window._ad=1}else if(_ad>0)_ad=-1;else window._as=null;drawA()}
 function cp(i){navigator.clipboard.writeText(link(list()[i]));popup('คัดลอกลิงก์แล้ว ส่งให้ลูกค้าได้เลย',{title:'✅ สำเร็จ'})}
-async function dl(i){if(!await popup('ต้องการลบลูกค้านี้ใช่ไหม?',{title:'🗑 ลบลูกค้า',confirm:true}))return;const L=list();L.splice(i,1);localStorage.setItem(LS,JSON.stringify(L));drawA()}
+async function dl(i){if(!await popup('ต้องการลบลูกค้านี้ใช่ไหม?',{title:'🗑 ลบลูกค้า',confirm:true}))return;const L=list().slice();L.splice(i,1);saveL(L)}
 let EI=-1;
 const SS='width:100%;padding:9px 12px;border:1px solid var(--b);border-radius:8px;font:inherit;background:#fff';
 function amC(){const d=a_am.value==='dob';a_age.style.display=d?'none':'';a_dob.style.display=d?'':'none';a_dobv.textContent=d&&a_dob.value?'อายุ '+ageOf(a_dob.value)+' ปี':''}
@@ -52,15 +75,15 @@ function openF(i){EI=i;const c=i>=0?list()[i]:{};
  fmT.textContent=i>=0?'✏️ แก้ไขลูกค้า':'➕ เพิ่มลูกค้า';
  a_name.value=c.name||'';a_sex.value=c.sex||(c.icon==='👨'?'m':c.icon?'f':'');
  a_am.value=c.dob?'dob':'age';a_dob.value=c.dob||'';a_age.value=c.age??(((c.lbl||'').match(/\d+/)||[''])[0]);
- a_page.value=c.page||'';amC();fm.style.display='flex';setTimeout(()=>a_name.focus(),50)}
+ document.querySelectorAll('#a_pages input').forEach(x=>x.checked=pagesOf(c).includes(x.value));amC();fm.style.display='flex';setTimeout(()=>a_name.focus(),50)}
 function closeF(){fm.style.display='none'}
 function sv(){const sx=a_sex.value,dob=a_am.value==='dob'?a_dob.value:'',age=dob?ageOf(dob):(a_age.value===''?NaN:+a_age.value);
  if(!sx||isNaN(age)){popup('กรอก เพศ และอายุ/วันเกิด ให้ครบ',{title:'⚠️ ข้อมูลไม่ครบ'});return}
- const c={name:a_name.value.trim(),sex:sx,age,icon:sx==='m'?'👨':'👩',lbl:(sx==='m'?'เพศชาย':'เพศหญิง')+' อายุ '+age+' ปี',page:a_page.value};if(dob)c.dob=dob;
- const L=list();if(EI>=0)L[EI]=c;else L.push(c);localStorage.setItem(LS,JSON.stringify(L));closeF();drawA()}
+ const c={name:a_name.value.trim(),sex:sx,age,icon:sx==='m'?'👨':'👩',lbl:(sx==='m'?'เพศชาย':'เพศหญิง')+' อายุ '+age+' ปี',pages:[...document.querySelectorAll('#a_pages input:checked')].map(x=>x.value)};if(dob)c.dob=dob;
+ const L=list().slice();if(EI>=0){c.id=L[EI].id;L[EI]=c}else{cid(c);L.push(c)}closeF();saveL(L)}
 if(q.has('admin')){
  document.getElementById('admin').innerHTML=`<div class="net" style="margin-bottom:20px"><div style="display:flex;justify-content:space-between;align-items:center"><b style="color:var(--aia);font-size:17px">👤 จัดการลูกค้า (เฉพาะคุณ)</b><button class="nb" onclick="openF(-1)">➕ เพิ่มลูกค้า</button></div>
- <div style="font-size:12px;color:var(--t2);margin:6px 0">รายชื่อเก็บในเบราว์เซอร์เครื่องนี้</div><div id="alist"></div></div>
+ <div id="sst" style="font-size:12px;color:var(--t2);margin:6px 0">รายชื่อเก็บในเบราว์เซอร์เครื่องนี้</div><div id="alist"></div></div>
  <div id="fm" style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:998;padding:20px">
  <form onsubmit="sv();return false" style="background:#fff;border-radius:14px;max-width:420px;width:100%;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25)">
  <div id="fmT" style="background:var(--aia);color:#fff;padding:12px 16px;font-weight:700"></div>
@@ -69,9 +92,9 @@ if(q.has('admin')){
  <label>เพศ<select id="a_sex" style="${SS}"><option value="">-- เลือก --</option><option value="f">👩 หญิง</option><option value="m">👨 ชาย</option></select></label>
  <label>อายุ<div style="display:flex;gap:8px"><select id="a_am" onchange="amC()" style="${SS};width:auto"><option value="age">ใส่อายุ</option><option value="dob">ใส่วันเกิด</option></select>
  <input id="a_age" type="number" min="0" max="99" placeholder="ปี" style="${SS}"><input id="a_dob" type="date" oninput="amC()" style="${SS};display:none"></div><span id="a_dobv" style="font-size:12px;color:var(--t2)"></span></label>
- <label>📄 หน้าแผนที่จะส่ง<select id="a_page" style="${SS}"><option value="">⏳ ยังไม่มีหน้า (เลือกทีหลังได้)</option>${PAGES.map(([id,p])=>`<option value="${id}">${p.icon} ${p.lbl}</option>`).join('')}</select></label></div>
+ <div>📄 หน้าแผนที่ผูก (เลือกได้หลายหน้า)<div id="a_pages" style="border:1px solid var(--b);border-radius:8px;padding:6px 10px;max-height:170px;overflow:auto;margin-top:4px">${PAGES.map(([id,p])=>`<label style="display:flex;gap:8px;align-items:center;padding:3px 0;font-size:14px"><input type="checkbox" value="${id}"> ${p.icon} ${p.lbl}</label>`).join('')||'<span style="color:var(--m)">ยังไม่มีหน้าแผน</span>'}</div></div></div>
  <div style="display:flex;justify-content:space-between;padding:0 16px 16px"><button type="button" onclick="closeF()" style="border:0;background:#eee;border-radius:8px;padding:9px 18px;font:inherit;cursor:pointer">ยกเลิก</button><button type="submit" style="border:0;background:var(--aia);color:#fff;border-radius:8px;padding:9px 18px;font:inherit;cursor:pointer">✓ บันทึก</button></div></form></div>`;
  let dn=null;fm.addEventListener('mousedown',e=>dn=e.target);fm.addEventListener('click',e=>{if(e.target===fm&&dn===fm)closeF()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&fm.style.display==='flex'&&document.getElementById('pp').style.display!=='flex')closeF()});
- drawA();}
+ drawA();loadSheet();}
 </script></body></html>

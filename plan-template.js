@@ -1,0 +1,63 @@
+/* plan-template.js (Nov 16 2026) — shared layout for all customer plan pages.
+ * Customer page defines: const CUST={name:'คุณรุ่ง',icon:'👩',age:45,note:'...'} and const PLANS=[...] then loads this file.
+ * Edit THIS file to change the format of every customer page at once. */
+(function(){var st=document.createElement('style');st.textContent=".kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:16px 0}\n.k{background:var(--card);border:1px solid var(--b);border-radius:12px;padding:14px 16px}\n.k .l{font-size:13px;color:var(--t2)}.k .v{font-size:24px;font-weight:700;margin-top:4px}.k .s{font-size:12px;color:var(--m)}\n.k.g .v{color:#16a34a}.k.r .v{color:var(--aia)}\n.sec{background:var(--card);border:1px solid var(--b);border-radius:12px;padding:16px 18px;margin-top:16px}\n.sec h3{margin:0 0 12px;font-size:16px;color:var(--aia)}\n.tl{display:flex;border-radius:10px;overflow:hidden;font-size:13px;text-align:center}\n.tl div{padding:12px 6px;color:#fff}\n.bar{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:14px}\n.bar .a{width:80px;color:var(--t2)}.bar .t{flex:1;background:var(--aia-bg);border-radius:6px;height:22px;position:relative}\n.bar .t i{display:block;height:100%;background:#16a34a;border-radius:6px}.bar .n{width:150px;text-align:right;font-weight:600}\ndetails summary{cursor:pointer;color:var(--aia);font-weight:600}\n.ft{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.ft th{background:var(--aia-bg);color:var(--aia);padding:7px}.ft td{padding:6px;border-bottom:1px solid var(--b);text-align:right}.ft td:first-child{text-align:center}\n.tb{border:1px solid var(--b);background:#fff;padding:8px 14px;border-radius:18px;font:inherit;font-size:14px;cursor:pointer}.tb.on{background:var(--aia);color:#fff;border-color:var(--aia)}\n.cmpT{font-size:14px;border-collapse:separate;border-spacing:0}.cmpT tr.grp td{background:#fff1f2;color:#be123c;font-weight:700;font-size:13px;text-align:left;padding:8px 10px;border-top:10px solid #fff;border-radius:10px 10px 0 0}.cmpT tr.grp+tr td{border-top:1px solid #fecdd3}.cmpT td.lb{text-align:left;color:var(--t2)}\n.cmpT td.win{background:#dcfce7;color:#166534;font-weight:700}\n.bdg{display:inline-block;background:#16a34a;color:#fff;font-size:11px;font-weight:600;padding:2px 7px;border-radius:10px;margin:3px 0 0 6px;white-space:nowrap}\n.hg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}\n.hc{border:1px solid var(--b);border-radius:10px;padding:12px}.hc .bdg{margin:6px 6px 0 0}.hs{font-size:12px;color:var(--t2);margin-top:8px}";document.head.appendChild(st);})();
+window.CUSTLBL=()=>CUST.name||((CUST.icon==='👩'?'เพศหญิง':'เพศชาย'));
+(function(){const q=new URLSearchParams(location.search);CUST.name='';if(q.get('a'))CUST.age=q.get('a');if(q.get('g'))CUST.icon=q.get('g');})();
+document.title=(CUST.title||'แผนออมทรัพย์')+' · '+(CUST.icon==='👩'?'หญิง':'ชาย')+' '+CUST.age+' ปี';
+document.body.insertAdjacentHTML('afterbegin','<div class="wrap"><div class="hd"><div><h1 id="t1"></h1><p id="t2"></p></div><div class="cust" style="background:rgba(255,255,255,.18);padding:8px 14px;border-radius:20px">'+CUST.icon+' '+(CUST.name||(CUST.icon==='👩'?'หญิง':'ชาย'))+' · อายุ '+CUST.age+' ปี</div></div>'+
+  '<div id="tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:16px"></div><div id="app"></div>'+
+  '<div class="note">* เป็นตัวอย่างเพื่อความเข้าใจเท่านั้น รายละเอียดความคุ้มครองจะระบุในกรมธรรม์<br>* '+(CUST.taxNote||'ลดหย่อนภาษีคำนวณตามฐานภาษีในใบเสนอขาย (ใช้สิทธิ์ได้ตามจริงไม่เกิน 100,000 บาท/ปี)')+'<br>* เงินคืนรายงวดจ่าย ณ สิ้นปีกรมธรรม์ ตามอัตรา % ของจำนวนเงินเอาประกันภัย</div></div>');
+var t1=document.getElementById('t1'),t2=document.getElementById('t2'),tabs=document.getElementById('tabs'),app=document.getElementById('app');
+const f=n=>Math.round(n).toLocaleString('en-US');
+const S=p=>{const paid=p.prem*p.payYears,back=p.cash.reduce((a,b)=>a+b,0),end=p.startAge+p.payYears-1,last=p.startAge+p.cash.length-1,fc=p.startAge+p.cash.findIndex(v=>v>0);let cp=0,cr=0,be=null;for(let i=0;i<p.cash.length;i++){if(p.startAge+i<=end)cp+=p.prem;cr+=p.cash[i];if(be===null&&cr>=cp){be=p.startAge+i;break}}return{paid,back,end,last,fc,be,gain:back-paid,x:back/paid}};
+// Nov 16 2026: cash-back pattern note — "คืน x% ของทุน ทุก n ปี" (auto from p.cash; p.cashNote overrides)
+function pc(x){return (Math.round(x*100)/100).toString()}
+function cashNote(p){
+ if(p.cashNote)return `<div style="font-size:13px;color:var(--t2);margin:-4px 0 10px">📝 ${p.cashNote}</div>`;
+ const g={};p.cash.forEach((v,i)=>{if(v)(g[v]=g[v]||[]).push(p.startAge+i)});
+ const L=Object.keys(g).map(v=>{const a=g[v],n=a.length,st=n>1?a[1]-a[0]:0,even=a.every((x,k)=>!k||x-a[k-1]===st);
+  const per=p.sa?'<b>'+pc(v/p.sa*100)+'%</b> ของทุน':'';
+  const when=n===1?'ครั้งเดียว ที่อายุ '+a[0]:(even?(st===1?'ทุกปี':'ทุก '+st+' ปี')+' อายุ '+a[0]+'–'+a[n-1]+' ('+n+' ครั้ง)':n+' ครั้ง ที่อายุ '+a.join(', '));
+  return {a0:a[0],t:'คืน '+per+' ('+f(+v)+' บาท) '+when};}).sort((x,y)=>x.a0-y.a0);
+ return L.length?`<div style="font-size:13px;color:var(--t2);margin:-4px 0 10px;line-height:1.7">${L.map(x=>'📝 '+x.t).join('<br>')}</div>`:'';
+}
+function bands(p){const o=[];p.cash.forEach((v,i)=>{if(!v)return;const a=p.startAge+i,l=o[o.length-1];if(l&&l.v===v&&l.b===a-1&&i<p.cash.length-1)l.b=a;else o.push({a,b:a,v})});return o}
+function render(i){document.querySelectorAll('.tb').forEach((b,j)=>b.classList.toggle('on',j===i));
+ if(i===PLANS.length)return cmp();
+ const p=PLANS[i],s=S(p),bd=bands(p),mx=Math.max(...bd.map(b=>(b.b-b.a+1)*b.v));
+ t1.textContent='💰 '+p.code;t2.textContent=p.th+' · คุ้มครอง '+p.cover;
+ const L=s.last-p.startAge+1;
+ app.innerHTML=`<div class="kp">
+ <div class="k"><div class="l">จ่ายเบี้ย</div><div class="v">${f(p.prem)}</div><div class="s">บาท/ปี × ${p.payYears} ปี (อายุ ${p.startAge}–${s.end})</div></div>
+ <div class="k"><div class="l">รวมจ่ายทั้งหมด</div><div class="v">${f(s.paid)}</div><div class="s">บาท</div></div>
+ <div class="k r"><div class="l">🎯 จุดคุ้มทุน</div><div class="v">${s.be?"อายุ "+s.be:"–"}</div><div class="s">${s.be?"เงินคืนสะสม ≥ เบี้ยที่จ่าย (ปีที่ "+(s.be-p.startAge+1)+")":"ไม่ถึงจุดคุ้มทุน"}</div></div>
+ <div class="k g"><div class="l">รวมได้คืน</div><div class="v">${f(s.back)}</div><div class="s">บาท</div></div>
+ <div class="k g"><div class="l">ได้มากกว่าที่จ่าย</div><div class="v">+${f(s.gain)}</div><div class="s">บาท (${s.x.toFixed(2)} เท่า)</div></div>
+ ${p.tax?`<div class="k r"><div class="l">ลดหย่อนภาษีรวม</div><div class="v">${f(p.tax)}</div><div class="s">บาท (ฐานภาษี ${p.taxRate}%)</div></div>`:''}</div>
+ <div class="sec"><h3>🗓️ ภาพรวมตลอดสัญญา</h3>
+ <div class="tl" style="margin-bottom:6px"><div style="flex:${p.payYears};background:#7c3aed">จ่ายเบี้ย อายุ ${p.startAge}–${s.end}</div><div style="flex:${L-p.payYears};background:#e5e7eb;color:#555">ไม่ต้องจ่ายแล้ว</div></div>
+ <div class="tl"><div style="flex:${s.fc-p.startAge};background:#e5e7eb"></div><div style="flex:${s.last-s.fc+1};background:#16a34a">รับเงินคืน อายุ ${s.fc}–${s.last}</div></div>
+ <div style="font-size:13px;color:var(--t2);margin-top:8px">🛡️ คุ้มครองชีวิต ${p.cover}</div></div>
+ <div class="sec"><h3>💵 เงินคืนที่ได้รับ</h3>${cashNote(p)}${bd.map(b=>`<div class="bar"><span class="a">อายุ ${b.a}${b.a!==b.b?'–'+b.b:''}</span><span class="t"><i style="width:${(b.b-b.a+1)*b.v/mx*100}%"></i></span><span class="n">${f(b.v)}${b.a!==b.b?'/ปี':''} <small style="color:var(--m)">${p.sa?pc(b.v/p.sa*100)+'% ของทุน ':''}${b.a!==b.b?'(รวม '+f((b.b-b.a+1)*b.v)+')':''}</small></span></div>`).join('')}</div>
+ <div class="sec"><h3>🛡️ ถ้าเสียชีวิต ครอบครัวได้รับ</h3><div style="font-size:14px">สูงสุด <b style="color:var(--aia)">${f(Math.max(...p.death))}</b> บาท · ต่ำสุด ${f(Math.min(...p.death))} บาท</div>
+ <details style="margin-top:10px"><summary>ดูตารางรายปี</summary><table class="ft"><tr><th>อายุ</th><th>เบี้ย</th><th>เงินคืน</th><th>กรณีเสียชีวิต</th></tr>
+ ${p.death.map((d,i)=>{const a=p.startAge+i;return `<tr><td>${a}</td><td>${a<=s.end?f(p.prem):'-'}</td><td style="color:#16a34a">${p.cash[i]?f(p.cash[i]):'-'}</td><td>${f(d)}</td></tr>`}).join('')}</table></details></div>`}
+function cmp(){t1.textContent='⚖️ เปรียบเทียบแผน';t2.textContent='เทียบทุกแผน · '+(CUST.title||'แผนออมทรัพย์');
+ const R=[['ประเภท',p=>p.type],
+ ['#','💵 ทุน & การจ่าย'],['ทุนประกัน',p=>f(p.sa),p=>p.sa,'max','💎 ทุนสูงสุด'],
+ ['จ่ายเบี้ย/ปี',p=>f(p.prem)],
+ ['จ่ายกี่ปี',p=>p.payYears+' ปี',p=>p.payYears,'min','⏱️ จ่ายสั้นสุด'],
+ ['รวมจ่าย',p=>f(S(p).paid)],
+ ['#','⏳ อายุ & ระยะเวลา'],['💰 ได้เงินคืนครบที่อายุ',p=>'อายุ '+S(p).last,p=>S(p).last,'min','💰 ได้ครบไวสุด'],['🎯 จุดคุ้มทุน',p=>S(p).be?'อายุ '+S(p).be:'–',p=>S(p).be||999,'min','🎯 คุ้มทุนไวสุด'],['เริ่มรับเงินคืน',p=>'อายุ '+S(p).fc,p=>S(p).fc,'min','⚡ ได้เงินไวสุด'],
+ ['คุ้มครอง',p=>p.cover,p=>S(p).last,'max','🛡️ ยาวสุด'],
+ ['#','🎁 ผลประโยชน์'],['รวมได้คืน',p=>f(S(p).back),p=>S(p).back,'max','🏆 ได้คืนมากสุด'],
+ ['ได้มากกว่าที่จ่าย',p=>'+'+f(S(p).gain)+' ('+S(p).x.toFixed(2)+' เท่า)',p=>S(p).x,'max','📈 คุ้มสุด'],
+ ['คุ้มครองชีวิตสูงสุด',p=>f(Math.max(...p.death)),p=>Math.max(...p.death),'max','❤️ คุ้มครองสูงสุด'],['ลดหย่อนภาษีรวม',p=>p.tax?f(p.tax):'–',p=>p.tax||0,'max','🧾 ลดหย่อนสูงสุด']];
+ const cell=(r,p)=>{if(!r[2])return `<td>${r[1](p)}</td>`;const vs=PLANS.map(r[2]),b=r[3]==='max'?Math.max(...vs):Math.min(...vs),win=r[2](p)===b;
+  return win?`<td class="win">${r[1](p)}<span class="bdg">${r[4]}</span></td>`:`<td>${r[1](p)}</td>`};
+ const wins=PLANS.map(p=>R.filter(r=>r[0]!=='#'&&r[2]&&(()=>{const vs=PLANS.map(r[2]);return r[2](p)===(r[3]==='max'?Math.max(...vs):Math.min(...vs))})()).map(r=>r[4]));
+ app.innerHTML=`<div class="sec" style="overflow-x:auto"><table class="ft cmpT"><tr><th></th>${PLANS.map((p,i)=>`<th style="cursor:pointer" onclick="render(${i})">${p.code} ↗</th>`).join('')}</tr>${R.map(r=>r[0]==='#'?`<tr class="grp"><td colspan="${PLANS.length+1}">${r[1]}</td></tr>`:`<tr><td class="lb">${r[0]}</td>${PLANS.map(p=>cell(r,p)).join('')}</tr>`).join('')}</table></div>
+ <div class="sec"><h3>🏅 จุดเด่นของแต่ละแผน</h3><div class="hg">${PLANS.map((p,i)=>`<div class="hc" style="cursor:pointer" onclick="render(${i})"><b style="color:var(--aia)">${p.code} ↗</b><div>${wins[i].length?wins[i].map(w=>`<span class="bdg">${w}</span>`).join(''):'<span style="color:var(--m);font-size:13px">–</span>'}</div><div class="hs">จ่าย ${f(p.prem)}/ปี × ${p.payYears} ปี · ได้คืน ${f(S(p).back)}</div></div>`).join('')}</div></div>`}
+tabs.innerHTML=PLANS.map((p,i)=>`<button class="tb" onclick="render(${i})">${i+1}. ${p.code}</button>`).join('')+`<button class="tb" onclick="render(${PLANS.length})">⚖️ เปรียบเทียบ</button>`;
+render(PLANS.length);
