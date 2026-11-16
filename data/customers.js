@@ -8,5 +8,7 @@ const CUSTOMERS={
  "rung-45":{icon:"👩",lbl:"ออมทรัพย์ · หญิง 45",url:"plans/savings_f45.html"},
  "captain-25":{icon:"👨",lbl:"ออมทรัพย์ · ชาย 25",url:"plans/savings_m25.html"},
  "pirung-74":{icon:"👨",lbl:"ประกันชีวิต · ชาย 74",url:"plans/life_m74.html"},
+ "mae-68":{icon:"👩",lbl:"ประกันชีวิต · หญิง 68",url:"plans/life_f68.html"},
+ "vorn-43":{icon:"👨",lbl:"ประกันชีวิต · ชาย 43",url:"plans/life_m43.html"},
  "vorn-45":{icon:"👨",lbl:"ออมทรัพย์ · ชาย 45",url:"plans/savings_m45.html"},
 };
