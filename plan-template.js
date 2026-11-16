@@ -39,13 +39,13 @@ function render(i){document.querySelectorAll('.tb').forEach((b,j)=>b.classList.t
  <div class="tl" style="margin-bottom:6px"><div style="flex:${p.payYears};background:#7c3aed">จ่ายเบี้ย อายุ ${p.startAge}–${s.end}</div><div style="flex:${L-p.payYears};background:#e5e7eb;color:#555">ไม่ต้องจ่ายแล้ว</div></div>
  <div class="tl"><div style="flex:${s.fc-p.startAge};background:#e5e7eb"></div><div style="flex:${s.last-s.fc+1};background:#16a34a">รับเงินคืน อายุ ${s.fc}–${s.last}</div></div>
  <div style="font-size:13px;color:var(--t2);margin-top:8px">🛡️ คุ้มครองชีวิต ${p.cover}</div></div>
- <div class="sec"><h3>💵 เงินคืนที่ได้รับ</h3>${cashNote(p)}${bd.map(b=>`<div class="bar"><span class="a">อายุ ${b.a}${b.a!==b.b?'–'+b.b:''}</span><span class="t"><i style="width:${(b.b-b.a+1)*b.v/mx*100}%"></i></span><span class="n">${f(b.v)}${b.a!==b.b?'/ปี':''} <small style="color:var(--m)">${p.sa?pc(b.v/p.sa*100)+'% ของทุน ':''}${b.a!==b.b?'(รวม '+f((b.b-b.a+1)*b.v)+')':''}</small></span></div>`).join('')}</div>
+ <div class="sec"><h3>💵 เงินคืนที่ได้รับ</h3>${cashNote(p)}${bd.map(b=>`<div class="bar"><span class="a">อายุ ${b.a}${b.a!==b.b?'–'+b.b:''}</span><span class="t"><i style="width:${(b.b-b.a+1)*b.v/mx*100}%"></i></span><span class="n">${f(b.v)}${b.a!==b.b?'/ปี':''} <small style="color:var(--m)">${p.sa&&!isLife()?pc(b.v/p.sa*100)+'% ของทุน ':''}${b.a!==b.b?'(รวม '+f((b.b-b.a+1)*b.v)+')':''}</small></span></div>`).join('')}</div>
  <div class="sec"><h3>🛡️ ถ้าเสียชีวิต ครอบครัวได้รับ</h3><div style="font-size:14px">สูงสุด <b style="color:var(--aia)">${f(Math.max(...p.death))}</b> บาท · ต่ำสุด ${f(Math.min(...p.death))} บาท</div>
  <details style="margin-top:10px"><summary>ดูตารางรายปี</summary>${(()=>{let cp=0,cr=0,fl=null;const rows=p.death.map((d,i)=>{const a=p.startAge+i;if(a<=s.end)cp+=p.prem;cr+=p.cash[i];const lv=cr-cp,dv=d+(cr-p.cash[i])-cp;if(fl===null&&lv>=0)fl=a;const c=v=>`<td style="color:${v>=0?'#16a34a':'#dc2626'};font-weight:600">${v>=0?'+':''}${f(v)}</td>`;return `<tr${a===fl?' style="background:#dcfce7"':''}><td>${a}${a===fl?' 🎯':''}</td><td>${a<=s.end?f(p.prem):'-'}</td><td>${f(cp)}</td><td style="color:#16a34a">${p.cash[i]?f(p.cash[i]):'-'}</td><td>${cr?f(cr):'-'}</td><td>${f(d)}</td>${c(dv)}</tr>`}).join('');
  return `<div style="font-size:12px;color:var(--t2);margin:8px 0">🎯 = ปีแรกที่เงินคืนสะสม ≥ เบี้ยสะสม (กำไร) · <b>ส่วนต่างกรณีเสียชีวิต</b> = เงินชดเชย + เงินคืนที่รับไปแล้วในปีก่อน ๆ − เบี้ยสะสม (ไม่นับเงินคืนปีที่เสียชีวิต เพราะจะได้อย่างใดอย่างหนึ่ง)</div><div style="overflow-x:auto"><table class="ft"><tr><th>อายุ</th><th>เบี้ย</th><th>เบี้ยสะสม</th><th>เงินคืน</th><th>เงินคืนสะสม</th><th>กรณีเสียชีวิต</th><th>ส่วนต่าง<br>(เสียชีวิต)</th></tr>${rows}</table></div>`})()}</details></div>`}
 const isLife=()=>/ชีวิต/.test(CUST.title||'')||PLANS.every(p=>p.type==='ตลอดชีพ');
 function cmp(){t1.textContent='⚖️ เปรียบเทียบแผน';t2.textContent='เทียบทุกแผน · '+(CUST.title||'แผนออมทรัพย์');
- const R=[['ประเภท',p=>p.type],
+ let R=[['ประเภท',p=>p.type],
  ['#','💵 ทุน & การจ่าย'],['ทุนประกัน',p=>f(p.sa),p=>p.sa,'max','💎 ทุนสูงสุด'],
  ['จ่ายเบี้ย/ปี',p=>f(p.prem)],
  ['จ่ายกี่ปี',p=>p.payYears+' ปี',p=>p.payYears,'min','⏱️ จ่ายสั้นสุด'],
@@ -62,8 +62,17 @@ function cmp(){t1.textContent='⚖️ เปรียบเทียบแผน
  const cell=(r,p)=>{if(!r[2])return `<td>${r[1](p)}</td>`;const vs=PLANS.map(r[2]),b=r[3]==='max'?Math.max(...vs):Math.min(...vs),win=r[2](p)===b;
   return win?`<td class="win">${r[1](p)}<span class="bdg">${r[4]}</span></td>`:`<td>${r[1](p)}</td>`};
  const wins=PLANS.map(p=>R.filter(r=>r[0]!=='#'&&r[2]&&(()=>{const vs=PLANS.map(r[2]);return r[2](p)===(r[3]==='max'?Math.max(...vs):Math.min(...vs))})()).map(r=>r[4]));
- app.innerHTML=`<div class="sec" style="overflow-x:auto"><table class="ft cmpT"><tr><th></th>${PLANS.map((p,i)=>`<th style="cursor:pointer" onclick="render(${i})">${p.code} ↗</th>`).join('')}</tr>${R.map(r=>r[0]==='#'?`<tr class="grp"><td colspan="${PLANS.length+1}">${r[1]}</td></tr>`:`<tr><td class="lb">${r[0]}</td>${PLANS.map(p=>cell(r,p)).join('')}</tr>`).join('')}</table></div>
+ app.innerHTML=`<div class="sec" style="overflow-x:auto"><table class="ft cmpT"><tr><th></th>${PLANS.map((p,i)=>`<th style="cursor:pointer" onclick="render(${i})">${p.code} ↗</th>`).join('')}</tr>${R.map(r=>r[0]==='#'?`<tr class="grp"><td colspan="${PLANS.length+1}">${r[1]}</td></tr>`:`<tr><td class="lb">${r[0]}</td>${PLANS.map(p=>cell(r,p)).join('')}</tr>`).join('')}</table></div>${diffSec()}
  <div class="sec"><h3>🏅 จุดเด่นของแต่ละแผน</h3><div class="hg">${PLANS.map((p,i)=>`<div class="hc" style="cursor:pointer" onclick="render(${i})"><b style="color:var(--aia)">${p.code} ↗</b><div>${wins[i].length?wins[i].map(w=>`<span class="bdg">${w}</span>`).join(''):'<span style="color:var(--m);font-size:13px">–</span>'}</div><div class="hs">จ่าย ${f(p.prem)}/ปี × ${p.payYears} ปี · ได้คืน ${f(S(p).back)}</div></div>`).join('')}</div></div>${advice(wins)}`}
+
+function diffSec(){if(PLANS.length<2)return '';const o=PLANS.map((p,i)=>i).sort((a,b)=>PLANS[a].prem-PLANS[b].prem),b=PLANS[o[0]],sb=S(b),
+ rows=[['เบี้ย/ปี',p=>p.prem],['เบี้ยรวม',p=>S(p).paid],['ทุนประกัน',p=>p.sa],['คุ้มครองชีวิตเริ่มต้น',p=>p.death[0]],['คุ้มครองชีวิตสูงสุด',p=>Math.max(...p.death)],['รวมได้คืน',p=>S(p).back]];
+ (b.riders||[]).forEach((x,k)=>rows.push([x.n,p=>((p.riders||[])[k]||{}).sa||0]));
+ const sg=v=>v>0?`<b style="color:var(--g,#16a34a)">+${f(v)}</b>`:v<0?`<b style="color:#dc2626">${f(v)}</b>`:'เท่ากัน';
+ return o.slice(1).map(i=>{const p=PLANS[i];const dp=p.prem-b.prem,ds=p.sa-b.sa;
+ return `<div class="sec"><h3>📊 ${p.code} เทียบกับ ${b.code}</h3><div style="overflow-x:auto"><table class="ft"><tr><th></th><th>${b.code}</th><th>${p.code}</th><th>ส่วนต่าง</th></tr>${rows.map(r=>`<tr><td class="lb">${r[0]}</td><td>${f(r[1](b))}</td><td>${f(r[1](p))}</td><td>${sg(r[1](p)-r[1](b))}</td></tr>`).join('')}
+ <tr><td class="lb">ทุนต่อเบี้ย 1 บาท/ปี</td><td>${(b.sa/b.prem).toFixed(2)}</td><td>${(p.sa/p.prem).toFixed(2)}</td><td>–</td></tr></table></div>
+ <div style="font-size:14px;line-height:1.7;margin-top:10px">💡 จ่ายเพิ่ม <b>${f(dp)}</b>/ปี (รวม ${f(dp*p.payYears)}) → ทุนเพิ่ม <b>${f(ds)}</b> · ได้คืนครบสัญญาเพิ่ม <b>${f(S(p).back-sb.back)}</b>${dp?` · ทุกเบี้ยที่จ่ายเพิ่ม 1 บาท/ปี ได้ทุนเพิ่ม ${(ds/dp).toFixed(2)} บาท`:''}</div></div>`}).join('')}
 const ADV={'💎 ทุนสูงสุด':'ทุนประกันสูง','⏱️ จ่ายสั้นสุด':'จ่ายเบี้ยสั้นที่สุด','💰 ได้ครบไวสุด':'ได้เงินคืนครบเร็ว','🎯 คุ้มทุนไวสุด':'คุ้มทุนเร็ว','⚡ ได้เงินไวสุด':'เริ่มรับเงินคืนเร็ว','🛡️ ยาวสุด':'คุ้มครองยาวนาน','🏆 ได้คืนมากสุด':'ได้เงินคืนรวมมากที่สุด','📈 คุ้มสุด':'ผลตอบแทนคุ้มที่สุด','❤️ คุ้มครองสูงสุด':'ความคุ้มครองชีวิตสูง','🧾 ลดหย่อนสูงสุด':'ลดหย่อนภาษีได้มากที่สุด'};
 function advice(wins){if(PLANS.length<2)return '';const j=a=>a.length<2?a.join(''):a.slice(0,-1).join(' ')+' และ'+a[a.length-1];
  const L=PLANS.map((p,i)=>{const w=[...new Set(wins[i].map(x=>ADV[x]).filter(Boolean))];if(!w.length)return '';const s=S(p);
