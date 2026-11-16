@@ -10,5 +10,6 @@ const CUSTOMERS={
  "pirung-74":{icon:"👨",lbl:"ประกันชีวิต · ชาย 74",url:"plans/life_m74.html"},
  "mae-68":{icon:"👩",lbl:"ประกันชีวิต · หญิง 68",url:"plans/life_f68.html"},
  "vorn-43":{icon:"👨",lbl:"ประกันชีวิต · ชาย 43",url:"plans/life_m43.html"},
+ "allianz-self":{icon:"👨",lbl:"Allianz · มาย ดับเบิล พลัส 25/20",url:"plans/allianz_m_self.html"},
  "vorn-45":{icon:"👨",lbl:"ออมทรัพย์ · ชาย 45",url:"plans/savings_m45.html"},
 };
