@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ลูกค้า · Insurance Plan Finder</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml"><meta name="theme-color" content="#D31145">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+body{font-family:'Inter','Noto Sans Thai',sans-serif;background:#f7f7f9;margin:0;color:#1f2937}
+.w{max-width:1000px;margin:0 auto;padding:16px}
+.hd{background:#D31145;color:#fff;border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.hd h1{margin:0;font-size:20px}.hd a{color:#fff;text-decoration:none;background:rgba(255,255,255,.18);padding:7px 14px;border-radius:20px;font-size:14px}
+.tabs{display:flex;gap:6px;margin:14px 0;flex-wrap:wrap}.tb{border:1px solid #e5e7eb;background:#fff;border-radius:20px;padding:8px 16px;font:inherit;cursor:pointer}.tb.on{background:#D31145;color:#fff;border-color:#D31145}
+.c{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px 18px;margin-bottom:14px}.c h3{margin:0 0 10px;color:#D31145;font-size:16px;display:flex;justify-content:space-between;align-items:center}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}.k{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px}.k .l{font-size:12px;color:#6b7280}.k .v{font-size:22px;font-weight:700}.k .s{font-size:12px;color:#6b7280}
+table{width:100%;border-collapse:collapse;font-size:14px}th{text-align:left;color:#6b7280;font-size:13px;font-weight:600;padding:8px;border-bottom:2px solid #e5e7eb}td{padding:8px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+.bd{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px}
+.b{border:0;border-radius:8px;padding:7px 12px;font:inherit;font-size:13px;cursor:pointer}.bp{background:#D31145;color:#fff}.bg{background:#eee}.ib{border:0;background:#f3f4f6;border-radius:6px;padding:4px 8px;cursor:pointer}
+input,select,textarea{width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font:inherit;background:#fff}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:99;padding:16px}
+.fm{background:#fff;border-radius:14px;max-width:460px;width:100%;max-height:92vh;display:flex;flex-direction:column;overflow:hidden}
+.fm .t{background:#D31145;color:#fff;padding:12px 16px;font-weight:700}.fm .bdy{padding:16px;display:grid;gap:10px;font-size:14px;overflow:auto}.fm .ft{display:flex;justify-content:space-between;padding:12px 16px;border-top:1px solid #e5e7eb}
+.nt{border-left:3px solid #D31145;padding:6px 12px;margin-bottom:10px}.nt .d{font-size:12px;color:#6b7280}
+@media print{.hd a,.tabs,.ib,.b,.noprint{display:none!important}body{background:#fff}.c{border:0}}
+</style></head><body><div class="w">
+<div class="hd"><h1 id="nm">👤 ลูกค้า</h1><span><a href="setup.html">⚙️ ตั้งค่าหน้าแผน</a> <a href="customers.html">← กลับหน้าจัดการ</a></span></div>
+<div id="st" style="font-size:12px;color:#6b7280;margin-top:8px"></div>
+<div class="tabs"><button class="tb on" data-t="ov">📊 ภาพรวม</button><button class="tb" data-t="po">📄 กรมธรรม์</button><button class="tb" data-t="no">📝 Note</button><button class="tb" data-t="rp">🖨️ Report</button></div>
+<div id="app"></div></div>
+<div class="ov" id="ov"><form class="fm" id="fm" onsubmit="return false"></form></div>
+<script src="data/customers.js"></script><script src="js/config-sheet.js" onerror=""></script>
+<script>
+const LS='ipf_customers_v1',ID=new URLSearchParams(location.search).get('id');
+const f=n=>n==null||n===''?'-':(+n).toLocaleString('en-US',{maximumFractionDigits:2});
+const dTH=d=>d?d.split('-').reverse().join('/'):'-';
+const ST={offer:['เสนอ','#e0e7ff','#3730a3'],bought:['ซื้อแล้ว','#dcfce7','#15803d'],active:['มีผลบังคับ','#d1fae5','#047857'],lapsed:['ขาดอายุ','#fee2e2','#b91c1c'],surr:['เวนคืน','#fef3c7','#92400e']};
+const RIDERS={mpci:'AIA Multi-Pay CI Plus (MPCI Plus)',ahc:'AIA Health Cancer (AHC)',tc:'AIA Total Care',citu:'AIA CI Top Up',hs:'AIA Health Saver',hh:'AIA Health Happy',hst:'AIA Health Starter',ic:'AIA Infinite Care',hp:'AIA Health Plus',hbx:'HB Extra (HBX)',pa:'อุบัติเหตุ (PA)',other:'อื่นๆ'};
+const PM={card:'💳 บัตรเครดิต',bank:'🏦 หักบัญชีธนาคาร',transfer:'📲 โอน/QR',counter:'🏪 เคาน์เตอร์/สาขา',cash:'💵 เงินสด (ตัวแทน)'};
+const UNIT={ahc:100000};const rid=x=>x.rid||(x.page&&CUSTOMERS[x.page]&&CUSTOMERS[x.page].rid)||Object.keys(RIDERS).find(k=>RIDERS[k]===(x.rider||x.name))||(/AHC|Health Cancer/i.test(x.name||'')?'ahc':/MPCI|Multi-Pay/i.test(x.name||'')?'mpci':'other');
+const saTxt=x=>{const r=x.kind==='rider'?rid(x):'';return UNIT[r]&&x.sa?`${f(x.sa)} หน่วย<br><small style="color:#6b7280">= ${f(x.sa*UNIT[r])} บาท</small>`:f(x.sa)};
+(function(){try{const s=JSON.parse(localStorage.getItem('ipf_sheet_cfg')||'null');if(s&&s.endpoint&&s.token&&!(window.IPF_SHEET&&window.IPF_SHEET.token))window.IPF_SHEET=s}catch(e){}})();
+let L=JSON.parse(localStorage.getItem(LS)||'[]'),C=null,ok=false,tab='ov';
+async function api(b){const W=window.IPF_SHEET;if(!W||!W.endpoint||!W.token)throw new Error('no config');b.token=W.token;const r=await fetch(W.endpoint,{method:'POST',body:JSON.stringify(b)});const j=await r.json();if(!j.ok)throw new Error(j.error||'API');return j}
+function pol(){const b=C.bought;return !b?[]:Array.isArray(b)?b:[b]}
+function norm(){C.bought=pol().map(x=>{x.kind=x.kind||(x.rider?'rider':'main');x.status=x.status||'bought';if(x.kind==='main'&&x.page&&(x.sa==null||x.prem==null)){const p=(CUSTOMERS[x.page]||{}).plans;const q=p&&p[x.plan||0];if(q){x.name=x.name||q[0];x.sa=x.sa??q[1];x.prem=x.prem??q[2]}}{const D=typeof POLICY_DOCS!=='undefined'&&x.kind==='main'&&POLICY_DOCS[x.page];if(D){['no','date','end','pm'].forEach(k=>{if(!x[k])x[k]=D[k]});x.doc=D.doc}}if(x.kind==='rider'){x.rid=rid(x);x.name=x.name||RIDERS[x.rid]}return x});C.notes=C.notes||[]}
+async function save(){const i=L.findIndex(x=>x.id===C.id);if(i>=0)L[i]=C;localStorage.setItem(LS,JSON.stringify(L));draw();if(!ok)return;st.textContent='⏳ กำลังบันทึก…';try{await api({action:'save',rows:L});st.textContent='✅ บันทึกลง Sheet แล้ว'}catch(e){st.textContent='⚠️ บันทึก Sheet ไม่สำเร็จ: '+e.message}}
+function age(){if(!C.dob)return C.age;const b=new Date(C.dob),t=new Date();let a=t.getFullYear()-b.getFullYear();if(t<new Date(t.getFullYear(),b.getMonth(),b.getDate()))a--;return a}
+function nextDue(d){if(!d)return null;const x=new Date(d),t=new Date();let n=new Date(t.getFullYear(),x.getMonth(),x.getDate());if(n<t)n.setFullYear(n.getFullYear()+1);return n}
+function badge(s){const v=ST[s]||ST.bought;return `<span class="bd" style="background:${v[1]};color:${v[2]}">${v[0]}</span>`}
+function live(x){return ['bought','active'].includes(x.status)}
+function draw(){if(!C){app.innerHTML='<div class="c">ไม่พบลูกค้า</div>';return}
+ nm.textContent=`${C.icon||'👤'} ${C.name||'-'} · ${C.sex==='m'?'ชาย':'หญิง'} ${age()} ปี`;document.title=(C.name||'ลูกค้า')+' · IPF';
+ document.querySelectorAll('.tb').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+ const P=pol(),M=P.filter(x=>x.kind==='main'),R=P.filter(x=>x.kind==='rider'),A=P.filter(live);
+ const sm=a=>a.reduce((s,x)=>s+(+x.prem||0),0),tM=sm(A.filter(x=>x.kind==='main')),tR=sm(A.filter(x=>x.kind==='rider'));
+ const dues=A.map(x=>({x,d:nextDue(x.pd||x.date)})).filter(o=>o.d).sort((a,b)=>a.d-b.d),nd=dues[0];
+ const row=(x,i)=>`<tr><td>${x.kind==='main'?'📄 หลัก':'➕ เพิ่มเติม'}</td><td><b>${x.name||(((CUSTOMERS[x.page]||{}).plans||[])[x.plan||0]||[])[0]||(CUSTOMERS[x.page]||{}).lbl||'-'}</b>${x.no?`<br><small style="color:#6b7280">เลขที่ ${x.no}</small>`:''}${x.doc?`<br><a href="${x.doc}" target="_blank" style="font-size:12px;color:#7c3aed">📑 สรุปเอกสาร ↗</a>`:''}${x.kind==='rider'&&x.page&&CUSTOMERS[x.page]?`<br><a href="${CUSTOMERS[x.page].url}" target="_blank" style="font-size:12px;color:#0369a1">ดูรายละเอียด ↗</a>`:''}${x.kind==='main'&&x.page&&CUSTOMERS[x.page]?`<br><a href="${CUSTOMERS[x.page].url}?bp=${x.plan||0}&bd=${x.date||''}&g=${encodeURIComponent(C.icon||'')}" target="_blank" style="font-size:12px;color:#D31145">ดูแผน ↗</a>`:''}</td><td>${saTxt(x)}</td><td>${f(x.prem)}${x.kind==='rider'?'<br><small style="color:#b45309">⚠️ อาจเปลี่ยนตามอายุ</small>':''}</td><td>${dTH(x.date)}</td><td>${x.age??'-'}</td><td>${badge(x.status)}${x.pm?`<br><small style="color:#6b7280">${PM[x.pm]||''}${x.au?' · 🔁 Auto':''}</small>`:''}</td><td class="noprint" style="white-space:nowrap"><button class="ib" onclick="edit(${i})">✏️</button> <button class="ib" onclick="del(${i})">🗑</button></td></tr>`;
+ const tbl=a=>a.length?`<div style="overflow-x:auto"><table><tr><th>ประเภท</th><th>แผน</th><th>ทุน</th><th>เบี้ย/ปี</th><th>วันที่ซื้อ</th><th>อายุตอนซื้อ</th><th>สถานะ</th><th class="noprint"></th></tr>${(()=>{const M=a.filter(x=>x.kind==='main').sort((x,y)=>(y.date||'')<(x.date||'')?-1:1),used=new Set(),out=[];
+ M.forEach((m,bi)=>{const ch=a.filter(r=>r.kind==='rider'&&!used.has(r)&&r.date&&r.date===m.date);ch.forEach(r=>used.add(r));const tot=[m,...ch].reduce((s,x)=>s+(+x.prem||0),0);
+  out.push(`<tr style="background:#fdeef2"><td colspan="8" style="font-weight:700;color:#D31145;padding:6px 8px">📘 เล่มที่ ${bi+1}${m.no?' · '+m.no:''} · ${1+ch.length} สัญญา · เบี้ยรวม ${f(tot)}/ปี</td></tr>`,row(m,P.indexOf(m)),...ch.map(r=>row(r,P.indexOf(r)).replace('<tr>','<tr style="background:#f8fafc">').replace('<td>➕ เพิ่มเติม','<td style="padding-left:22px">└ ➕ เพิ่มเติม')))});
+ const rest=a.filter(r=>!M.includes(r)&&!used.has(r));if(rest.length)out.push(`<tr style="background:#f1f5f9"><td colspan="8" style="font-weight:700;color:#6b7280;padding:6px 8px">➕ สัญญาเพิ่มเติมที่ไม่ได้อยู่ในเล่ม</td></tr>`,...rest.map(r=>row(r,P.indexOf(r))));
+ return out.join('')})()}</table></div>`:'<div style="color:#9ca3af;font-size:14px">ยังไม่มีรายการ</div>';
+ const kp=`<div class="kp"><div class="k"><div class="l">กรมธรรม์ที่มีผล</div><div class="v">${A.filter(x=>x.kind==='main').length} เล่ม</div><div class="s">${A.length} สัญญา · หลัก ${A.filter(x=>x.kind==='main').length} · เพิ่มเติม ${A.filter(x=>x.kind==='rider').length}</div></div>
+ <div class="k"><div class="l">เบี้ยรวม/ปี</div><div class="v" style="color:#D31145">${f(tM+tR)}</div><div class="s">หลัก ${f(tM)} + เพิ่มเติม ${f(tR)}</div></div>
+ <div class="k"><div class="l">ครบกำหนดชำระถัดไป</div><div class="v" style="font-size:18px">${nd?nd.d.toLocaleDateString('th-TH-u-ca-gregory',{day:'numeric',month:'short',year:'numeric'}):'-'}</div><div class="s">${nd?nd.x.name:''}</div></div>
+ <div class="k"><div class="l">ทุนชีวิตรวม (สัญญาหลัก)</div><div class="v">${f(A.filter(x=>x.kind==='main').reduce((s,x)=>s+(+x.sa||0),0))}</div></div></div>`;
+ const notes=C.notes.slice().sort((a,b)=>b.d<a.d?-1:1);
+ const noteBox=`<div class="c noprint"><h3>📝 เพิ่ม Note</h3><div style="display:grid;grid-template-columns:150px 1fr;gap:8px"><input type="date" id="nd" value="${new Date().toISOString().slice(0,10)}"><select id="nk"><option>💬 คุย/นัด</option><option>📄 ส่งใบเสนอ</option><option>💰 เก็บเบี้ย</option><option>🏥 เคลม</option><option>📌 อื่นๆ</option></select></div><textarea id="nt" rows="3" placeholder="รายละเอียด…" style="margin-top:8px"></textarea><div style="text-align:right;margin-top:8px"><button class="b bp" onclick="addN()">✓ บันทึก Note</button></div></div>`;
+ const nlist=notes.length?notes.map(n=>`<div class="nt"><div class="d">${dTH(n.d)} · ${n.k||''} <button class="ib noprint" style="float:right" onclick="delN('${n.id}')">🗑</button></div>${(n.t||'').replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>`).join(''):'<div style="color:#9ca3af;font-size:14px">ยังไม่มี Note</div>';
+ if(tab==='ov')app.innerHTML=kp+`<div class="c"><h3>📄 กรมธรรม์ที่มีผล</h3>${tbl(A)}</div><div class="c"><h3>📝 Note ล่าสุด</h3>${notes.slice(0,3).map(n=>`<div class="nt"><div class="d">${dTH(n.d)} · ${n.k||''}</div>${(n.t||'').replace(/</g,'&lt;')}</div>`).join('')||'<div style="color:#9ca3af;font-size:14px">ยังไม่มี Note</div>'}</div>`;
+ if(tab==='po')app.innerHTML=`<div class="c"><h3>📄 สัญญาหลัก <button class="b bp" onclick="edit(-1,'main')">➕ เพิ่มสัญญาหลัก</button></h3>${tbl(M)}</div><div class="c"><h3>➕ สัญญาเพิ่มเติม <button class="b" style="background:#e0f2fe;color:#0369a1" onclick="edit(-1,'rider')">➕ เพิ่มสัญญาเพิ่มเติม</button></h3>${tbl(R)}</div>`;
+ if(tab==='no')app.innerHTML=noteBox+`<div class="c"><h3>🗂️ Timeline</h3>${nlist}</div>`;
+ if(tab==='rp')app.innerHTML=`<div class="c"><h3>🖨️ รายงานลูกค้า <button class="b bp" onclick="print()">🖨️ พิมพ์ / PDF</button></h3><div style="font-size:14px;line-height:1.8"><b>${C.name||'-'}</b> · ${C.sex==='m'?'ชาย':'หญิง'} ${age()} ปี${C.dob?' · เกิด '+dTH(C.dob):''}<br>วันที่ออกรายงาน ${new Date().toLocaleDateString('th-TH-u-ca-gregory',{day:'numeric',month:'long',year:'numeric'})}</div></div>`+kp+`<div class="c"><h3>📄 รายการกรมธรรม์ทั้งหมด</h3>${tbl(P)}</div><div class="c"><h3>📅 กำหนดชำระ 12 เดือนข้างหน้า</h3>${dues.length?`<table><tr><th>วันที่</th><th>แผน</th><th>เบี้ย</th></tr>${dues.map(o=>`<tr><td>${o.d.toLocaleDateString('th-TH-u-ca-gregory',{day:'numeric',month:'short',year:'numeric'})}</td><td>${o.x.name}</td><td>${f(o.x.prem)}</td></tr>`).join('')}<tr><td colspan="2"><b>รวม</b></td><td><b>${f(tM+tR)}</b></td></tr></table>`:'-'}</div><div class="c"><h3>📝 Note</h3>${nlist}</div>`}
+function pgF(sel){const g=f_g.value,a=f_a.value,cur=sel||e_pg.value;e_pg.innerHTML='<option value="">— ไม่ผูกหน้าแผน —</option>'+Object.entries(CUSTOMERS).filter(([id,p])=>(p.kind||'main')===window._EK&&(!g||p.g===g)&&(!a||String(p.age)===String(a)||id===cur)).map(([id,p])=>`<option value="${id}" ${id===cur?'selected':''}>${p.icon} ${p.lbl}</option>`).join('');e_pl.innerHTML=plOpts(e_pg.value,null)}
+function pgOpts(sel){return Object.entries(CUSTOMERS).filter(([,p])=>p.plans).map(([id,p])=>`<option value="${id}" ${id===sel?'selected':''}>${p.icon} ${p.lbl}</option>`).join('')}
+function plOpts(pg,sel){const p=(CUSTOMERS[pg]||{}).plans||[];return p.map((q,i)=>`<option value="${i}" ${i==sel?'selected':''}>${q[0]} · ทุน ${f(q[1])} · เบี้ย ${f(q[2])}</option>`).join('')}
+let EI=-1;
+function edit(i,kind){EI=i;const _m=pol().filter(y=>y.kind==='main'&&y.date).sort((a,b)=>a.date<b.date?-1:1)[0];const x=i>=0?pol()[i]:{kind,status:'bought',date:(kind==='rider'&&_m?_m.date:new Date().toISOString().slice(0,10))};kind=x.kind;
+ const pre=(typeof RIDER_PRESETS!=='undefined'?RIDER_PRESETS:[]).filter(p=>p.g===C.sex);
+ let H=`<div class="t">${i>=0?'✏️ แก้ไข':'➕ เพิ่ม'}${kind==='main'?'สัญญาหลัก':'สัญญาเพิ่มเติม'}</div><div class="bdy">
+ <div style="display:flex;gap:6px"><select id="f_g" onchange="pgF()" style="flex:1"><option value="">ทุกเพศ</option><option value="m" ${C.sex==='m'?'selected':''}>ชาย</option><option value="f" ${C.sex==='f'?'selected':''}>หญิง</option></select><input id="f_a" type="number" placeholder="อายุ" value="${x.age??''}" oninput="pgF()" style="flex:1"></div>
+ <label>หน้าแผน<select id="e_pg" onchange="e_pl.innerHTML=plOpts(this.value);fillPl()"></select></label><label>แผน<select id="e_pl" onchange="fillPl()"></select></label>
+ <label>ชื่อแผน<input id="e_nm" value="${x.name||''}"></label>`;
+ H+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><label>ทุน <small id="e_su" style="color:#6b7280"></small><input id="e_sa" oninput="suH()" type="number" value="${x.sa??''}"></label><label>เบี้ย/ปี<input id="e_pr" type="number" step="0.01" value="${x.prem??''}"></label></div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><label>วันที่ซื้อ<input id="e_dt" type="date" value="${x.date||''}"></label><label>สถานะ<select id="e_st">${Object.entries(ST).map(([k,v])=>`<option value="${k}" ${k===x.status?'selected':''}>${v[0]}</option>`).join('')}</select></label></div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><label>วิธีจ่าย<select id="e_pm"><option value="">—</option>${Object.entries(PM).map(([k,v])=>`<option value="${k}" ${x.pm===k?'selected':''}>${v}</option>`).join('')}</select></label><label>วันครบกำหนดจ่าย<input id="e_pd" type="date" value="${x.pd||''}" title="ว่าง = ใช้วันครบรอบวันซื้อ"></label></div>
+ <label>วันครบสัญญา / สิ้นสุดกรมธรรม์<input id="e_ed" type="date" value="${x.end||''}"></label>
+ <label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="e_au" style="width:auto" ${x.au?'checked':''}> 🔁 ตัดอัตโนมัติ (Auto-pay)</label>
+ <label>เลขกรมธรรม์<input id="e_no" value="${x.no||''}" placeholder="ไม่บังคับ"></label>
+ <label>หมายเหตุ<textarea id="e_rm" rows="2">${x.rm||''}</textarea></label></div>
+ <div class="ft"><button type="button" class="b bg" onclick="ov.style.display='none'">ยกเลิก</button><button type="button" class="b bp" onclick="sv('${kind}')">✓ บันทึก</button></div>`;
+ fm.innerHTML=H;window._EK=kind;pgF(x.page);if(x.page){e_pl.innerHTML=plOpts(x.page,x.plan)}ov.style.display='flex';if(i<0)fillPl()}
+window.fillPl=()=>{const pg=document.getElementById('e_pg').value,p=((CUSTOMERS[pg]||{}).plans||[])[+e_pl.value];if(p){e_nm.value=p[0];e_sa.value=p[1]??'';e_pr.value=p[2]??''}suH()}
+window.suH=()=>{const r=(CUSTOMERS[(document.getElementById('e_pg')||{}).value]||{}).rid,u=UNIT[r];e_su.textContent=u?`(หน่วย · 1 หน่วย = ${f(u)} บาท${e_sa.value?' → '+f(e_sa.value*u)+' บาท':''})`:''};
+window.fillPs=()=>{const pre=RIDER_PRESETS.filter(p=>p.g===C.sex),p=pre[+e_ps.value];if(p){e_nm.value=p.rider;e_sa.value=p.sa;e_pr.value=p.prem}}
+function sv(kind){const x={kind,name:e_nm.value,sa:+e_sa.value||null,prem:+e_pr.value||null,date:e_dt.value,status:e_st.value,pm:e_pm.value,au:e_au.checked,pd:e_pd.value,end:e_ed.value,no:e_no.value.trim(),rm:e_rm.value.trim()};
+ if(kind==='main'){x.page=e_pg.value;x.plan=+e_pl.value||0}else{x.page=e_pg.value;x.plan=+e_pl.value||0;x.rid=(CUSTOMERS[x.page]||{}).rid||rid(x);delete x.rider}
+ if(C.dob&&x.date){const b=new Date(C.dob),t=new Date(x.date);let a=t.getFullYear()-b.getFullYear();if(t<new Date(t.getFullYear(),b.getMonth(),b.getDate()))a--;x.age=a}else x.age=(EI>=0?pol()[EI].age:null)??C.age;
+ const P=pol();if(EI>=0)P[EI]=x;else P.push(x);C.bought=P;ov.style.display='none';save()}
+function del(i){if(!confirm('ลบรายการนี้?'))return;const P=pol();P.splice(i,1);C.bought=P;save()}
+function addN(){const t=document.getElementById('nt').value.trim();if(!t)return;C.notes.push({id:Date.now().toString(36),d:nd.value,k:nk.value,t});save()}
+function delN(id){if(!confirm('ลบ Note นี้?'))return;C.notes=C.notes.filter(n=>n.id!==id);save()}
+document.querySelectorAll('.tb').forEach(b=>b.onclick=()=>{tab=b.dataset.t;draw()});
+ov.onclick=e=>{if(e.target===ov)ov.style.display='none'};
+function pick(){C=L.find(x=>x.id===ID)||null;if(C)norm();draw()}
+pick();
+(async()=>{try{st.textContent='⏳ กำลังโหลดจาก Sheet…';const j=await api({action:'get'});if(j.rows&&j.rows.length){L=j.rows;localStorage.setItem(LS,JSON.stringify(L))}ok=true;st.textContent='✅ ซิงก์กับ Sheet แล้ว';pick()}catch(e){st.textContent='⚠️ ใช้ข้อมูลในเครื่อง ('+e.message+')'}})();
+</script><script src="js/admin-nav.js"></script>
+</body></html>

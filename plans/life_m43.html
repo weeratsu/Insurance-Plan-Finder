@@ -15,4 +15,14 @@ const PLANS=[{"code": "Pay Life Plus 20Pay (NP)", "th": "เอไอเอ ต�
 <div style="background:#fff7ed;border-radius:10px;padding:12px 14px"><b>🫁 AIA TI · 540,000 บาท</b><br>ภาวะเจ็บป่วยระยะสุดท้าย<br>• ถ้าแพทย์ผู้เชี่ยวชาญวินิจฉัยว่าอยู่ในภาวะเจ็บป่วยระยะสุดท้าย บริษัทจ่ายผลประโยชน์ตามสัญญา<br>• และ<b>ยกเว้นเบี้ยสัญญาหลัก</b>หลังจ่ายผลประโยชน์แล้ว</div>
 <div style="background:#ecfeff;border-radius:10px;padding:12px 14px"><b>📋 AIA WPCI · 600,000 บาท</b><br>ยกเว้นเบี้ยเมื่อเป็นโรคร้ายแรง<br>• ถ้าเป็นโรคร้ายแรงระดับรุนแรง 1 ใน <b>44 โรค</b> บริษัท<b>ยกเว้นเบี้ยสัญญาหลักทั้งหมด</b> (ทุน WPCI เท่ากับทุนสัญญาหลัก)<br>• ไม่ต้องจ่ายเบี้ยต่อ แต่ยังคุ้มครองตามเดิม</div></div>
 <div style="font-size:12px;color:var(--m);margin-top:8px">* นิยามและเงื่อนไขเป็นไปตามที่ระบุในสัญญา TI และ WPCI</div></div>`)})();</script>
+
+<script>(function(){const SV=[0, 6600, 20400, 34800, 49800, 66600, 85200, 100800, 117000, 133800, 151200, 168600, 187200, 206400, 225600, 246000, 267000, 288600, 310800, 334200, 342600, 351600, 360000, 369000, 377400, 386400, 394800, 403200, 411600, 420000, 427800, 435600, 442800, 450000, 457200, 463800, 469800, 476400, 481800, 487800, 493200, 498600, 504000, 509400, 514800, 520200, 525000, 529800, 534600, 539400, 544200, 550200, 556800, 565200, 578400, 600000],P=20502,A0=43,f=n=>Math.round(n).toLocaleString('en-US');
+let be=null;const rows=SV.map((v,i)=>{const cp=P*Math.min(i+1,20),d=v-cp;if(be===null&&d>=0)be=A0+i;return{a:A0+i,cp,v,d,pc:cp?v/cp*100:0}});
+const tr=rows.map(r=>`<tr${r.a===be?' style="background:#dcfce7"':''}><td>${r.a}${r.a===be?' 🎯':''}</td><td>${f(r.cp)}</td><td>${r.v?f(r.v):'-'}</td><td style="color:${r.d>=0?'#16a34a':'#dc2626'};font-weight:600">${r.d>=0?'+':''}${f(r.d)}</td><td>${r.pc.toFixed(0)}%</td></tr>`).join('');
+const h=`<div class="sec"><h3>🔄 กรณีเวนคืนกรมธรรม์</h3>
+<div style="font-size:14px;line-height:1.7;margin-bottom:8px">🎯 เวนคืนแล้ว<b>ไม่ขาดทุนเมื่ออายุ ${be}</b> (ได้ ${f(SV[be-A0])} vs จ่าย ${f(P*20)}) · ก่อนหน้านั้นเวนคืนจะได้น้อยกว่าเบี้ยที่จ่าย</div>
+<details><summary style="cursor:pointer;color:var(--aia);font-weight:600">▶ ดูตารางเวนคืนรายปี</summary>
+<div style="font-size:12px;color:var(--t2);margin:6px 0">เงินค่าเวนคืน ณ ปีกรมธรรม์นั้น เทียบเบี้ยหลักสะสม (ไม่รวมสัญญาเพิ่มเติม)</div>
+<div style="overflow-x:auto"><table class="ft"><tr><th>อายุ</th><th>เบี้ยสะสม</th><th>เงินค่าเวนคืน</th><th>กำไร/ขาดทุน</th><th>% ของเบี้ย</th></tr>${tr}</table></div></details></div>`;
+const n=document.querySelector('.note')||document.getElementById('app');if(n)n.insertAdjacentHTML(n.classList&&n.classList.contains('note')?'beforebegin':'beforeend',h)})();</script>
 </body></html>

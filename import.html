@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>นำเข้าแผนจาก Excel · IPF</title><link rel="icon" href="icon.svg"><meta name="theme-color" content="#D31145">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>body{font-family:'Inter','Noto Sans Thai',sans-serif;background:#f7f7f9;margin:0;color:#1f2937}.w{max-width:1000px;margin:0 auto;padding:16px}
+.hd{background:#D31145;color:#fff;border-radius:16px;padding:16px 20px}.hd h1{margin:0;font-size:20px}.c{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px;margin-top:14px}
+.b{border:0;border-radius:8px;padding:9px 16px;font:inherit;cursor:pointer;background:#D31145;color:#fff;text-decoration:none;display:inline-block}.b2{background:#eee;color:#111}
+textarea{width:100%;box-sizing:border-box;font:12px monospace;border:1px solid #e5e7eb;border-radius:8px;padding:8px}.err{color:#dc2626}.ok{color:#16a34a}iframe{width:100%;height:640px;border:1px solid #e5e7eb;border-radius:10px}</style></head><body><div class="w">
+<div class="hd"><h1>📥 นำเข้าแผนจาก Excel</h1></div>
+<div class="c"><b>1.</b> ดาวน์โหลดแม่แบบ → กรอกข้อมูล <a class="b b2" href="plan_import_template.xlsx" download>⬇️ plan_import_template.xlsx</a>
+<div style="margin-top:12px"><b>2.</b> เลือกไฟล์ที่กรอกแล้ว <input type="file" id="f" accept=".xlsx,.xls"></div><div id="msg" style="margin-top:8px;font-size:14px"></div></div>
+<div class="c" id="out" style="display:none"><b>3.</b> ตัวอย่างหน้า<div style="margin:8px 0"><a class="b" id="dl">⬇️ ดาวน์โหลด <span id="fn"></span></a> → วางไว้ในโฟลเดอร์ <code>plans/</code></div>
+<iframe id="pv"></iframe>
+<div style="margin-top:12px"><b>4.</b> คัดลอกบรรทัดนี้ไปวางใน <code>data/customers.js</code> (ก่อน <code>};</code>) <button class="b b2" onclick="navigator.clipboard.writeText(cj.value)">📋 คัดลอก</button></div><textarea id="cj" rows="3"></textarea></div></div>
+<script>
+const $=id=>document.getElementById(id),num=v=>v===''||v==null?null:+String(v).replace(/,/g,'');
+function rows(wb,n){const s=wb.Sheets[n];return s?XLSX.utils.sheet_to_json(s,{defval:''}):[]}
+$('f').onchange=async e=>{const file=e.target.files[0];if(!file)return;const E=[];
+ try{const wb=XLSX.read(await file.arrayBuffer());
+ const pg={};rows(wb,'Page').forEach(r=>pg[String(r.field).trim()]=String(r.value).trim());
+ ['id','file','sex','age','kind'].forEach(k=>{if(!pg[k])E.push('Page: ขาด '+k)});
+ if(pg.id&&!/^[a-z0-9_-]+$/.test(pg.id))E.push('Page: id ใช้ได้แค่ a-z 0-9 - _');
+ const age=+pg.age,Y=rows(wb,'Yearly'),R=rows(wb,'Riders');
+ const PL=rows(wb,'Plans').filter(r=>r.plan_no!=='').map(r=>{const n=+r.plan_no,y=Y.filter(x=>+x.plan_no===n).sort((a,b)=>a.age-b.age);
+  if(!y.length)E.push(`Yearly: แผน ${n} ไม่มีข้อมูลรายปี`);
+  if(y.length&&+y[0].age!==age)E.push(`Yearly: แผน ${n} อายุแรก ${y[0].age} ไม่ตรงกับ Page.age ${age}`);
+  y.forEach((x,i)=>{if(i&&+x.age!==+y[i-1].age+1)E.push(`Yearly: แผน ${n} อายุไม่ต่อเนื่องที่ ${x.age}`)});
+  const o={code:String(r.code),th:String(r.th||''),type:String(r.type||''),sa:num(r.sa),prem:num(r.prem),payYears:num(r.payYears),startAge:age,tax:num(r.tax),taxRate:num(r.taxRate)||0,cover:String(r.cover||''),death:y.map(x=>num(x.death)||0),cash:y.map(x=>num(x.cash)||0)};
+  if(r.cashNote)o.cashNote=String(r.cashNote);const rd=R.filter(x=>+x.plan_no===n&&x.name);if(rd.length)o.riders=rd.map(x=>({n:String(x.name),sa:num(x.sa),d:String(x.desc||'')}));
+  const sv=y.map(x=>num(x.surrender));if(sv.some(v=>v))o._sv=sv.map(v=>v||0);
+  ['code','sa','prem','payYears'].forEach(k=>{if(o[k]==null||o[k]==='')E.push(`Plans: แผน ${n} ขาด ${k}`)});return o});
+ if(!PL.length)E.push('Plans: ไม่มีแผน');
+ if(E.length){$('msg').innerHTML='<div class="err">❌ '+E.join('<br>❌ ')+'</div>';$('out').style.display='none';return}
+ const icon=pg.sex==='f'?'👩':'👨',sx=pg.sex==='f'?'หญิง':'ชาย',title=pg.title||'แผนประกัน';
+ const sv=PL[0]._sv;PL.forEach(p=>delete p._sv);
+ const CUST={name:'',icon,age,title};if(pg.taxNote)CUST.taxNote=pg.taxNote;
+ const svJs=sv?`<script>(function(){const SV=${JSON.stringify(sv)},P=${PL[0].prem},A0=${age},Y=${PL[0].payYears},f=n=>Math.round(n).toLocaleString('en-US');let be=null;const rows=SV.map((v,i)=>{const cp=P*Math.min(i+1,Y),d=v-cp;if(be===null&&v&&d>=0)be=A0+i;return{a:A0+i,cp,v,d}});
+const tr=rows.map(r=>\`<tr\${r.a===be?' style="background:#dcfce7"':''}><td>\${r.a}\${r.a===be?' 🎯':''}</td><td>\${f(r.cp)}</td><td>\${r.v?f(r.v):'-'}</td><td style="color:\${r.d>=0?'#16a34a':'#dc2626'};font-weight:600">\${r.d>=0?'+':''}\${f(r.d)}</td></tr>\`).join('');
+const h=\`<div class="sec"><h3>🔄 กรณีเวนคืนกรมธรรม์ (แผน 1)</h3><div style="font-size:14px;margin-bottom:8px">\${be?'🎯 เวนคืนแล้วไม่ขาดทุนเมื่ออายุ '+be:'เวนคืนก่อนครบสัญญาจะได้น้อยกว่าเบี้ยที่จ่าย'}</div><details><summary style="cursor:pointer;color:var(--aia);font-weight:600">▶ ดูตารางเวนคืนรายปี</summary><div style="overflow-x:auto"><table class="ft"><tr><th>อายุ</th><th>เบี้ยสะสม</th><th>เงินค่าเวนคืน</th><th>กำไร/ขาดทุน</th></tr>\${tr}</table></div></details></div>\`;
+const n=document.querySelector('.note')||document.getElementById('app');if(n)n.insertAdjacentHTML(n.classList.contains('note')?'beforebegin':'beforeend',h)})();<\/script>`:'';
+ const html=`<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${title} · ${sx} ${age} ปี</title>
+<link rel="icon" href="../icon.svg" type="image/svg+xml"><meta name="theme-color" content="#D31145">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head><body>
+<script>
+// ---- generated by import.html from Excel ----
+const CUST=${JSON.stringify(CUST)};
+const PLANS=${JSON.stringify(PL)};
+<\/script>
+<script src="../plan-template.js?v=3"><\/script>
+${svJs}
+</body></html>`;
+ const blob=new Blob([html],{type:'text/html'}),fn=pg.file.replace(/\.html$/,'')+'.html';$('dl').href=URL.createObjectURL(blob);$('dl').download=fn;$('fn').textContent=fn;
+ $('pv').srcdoc=html.replace(/\.\.\//g,'');
+ const cat=pg.cat||'life',lbl=(pg.label||({life:'ประกันชีวิต',savings:'ออมทรัพย์',health:'สุขภาพ',mpci:'MPCI Plus',ahc:'Health Cancer',annuity:'บำนาญ'}[cat]||title))+' · '+sx+' '+age;
+ $('cj').value=` "${pg.id}":{brand:"${pg.brand||'aia'}",cat:"${cat}",kind:"${pg.kind}",g:"${pg.sex}",age:${age},plans:${JSON.stringify(PL.map(p=>[p.code,p.sa,p.prem]))},icon:"${icon}",lbl:"${lbl}",url:"plans/${fn}"},`;
+ $('msg').innerHTML=`<div class="ok">✅ อ่านได้ ${PL.length} แผน · ${PL[0].death.length} ปี${sv?' · มีตารางเวนคืน':''}</div>`;$('out').style.display='block'}
+ catch(err){$('msg').innerHTML='<div class="err">❌ อ่านไฟล์ไม่ได้: '+err.message+'</div>'}};
+</script><script src="js/admin-nav.js"></script></body></html>

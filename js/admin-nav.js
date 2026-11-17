@@ -1,0 +1,7 @@
+// เมนูจัดการ ใช้ร่วมกันทุกหน้า admin
+(function(){const P=location.pathname.split('/').pop()||'index.html',R=location.pathname.includes('/plans/')?'../':'';
+const M=[['index.html?admin','🏠 หน้าแรก','index.html'],['customers.html','👤 จัดการลูกค้า','customers.html'],['setup.html','⚙️ จัดการหน้าแผน','setup.html'],['import.html','📥 นำเข้าแผน','import.html'],['hospitals.html','🏥 ค้นหา รพ.','hospitals.html']];
+const st=document.createElement('style');st.textContent='#anav{display:flex;gap:6px;flex-wrap:wrap;background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:8px;margin:12px 0}#anav a{flex:1 1 130px;text-align:center;padding:10px;border-radius:10px;background:#fdeef2;color:#D31145;text-decoration:none;font-weight:600;font-size:14px}#anav a:hover,#anav a.on{background:#D31145;color:#fff}@media print{#anav{display:none}}';document.head.appendChild(st);
+const n=document.createElement('nav');n.id='anav';n.innerHTML=M.map(([u,l,k])=>`<a href="${R+u}" class="${k===P||(k==='customers.html'&&P==='customer.html')?'on':''}">${l}</a>`).join('');
+const go=()=>{const h=document.querySelector('.hd');if(h)h.insertAdjacentElement('afterend',n);else document.body.prepend(n);const o=document.getElementById('amenu');if(o)o.remove()};
+document.readyState==='loading'?document.addEventListener('DOMContentLoaded',go):go()})();

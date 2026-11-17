@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>แผนประกันชีวิต · หญิง 70 ปี</title>
+<link rel="icon" href="../icon.svg" type="image/svg+xml"><meta name="theme-color" content="#D31145">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head><body>
+<script>
+// ---- Customer data only. Layout lives in plan-template.js ----
+const CUST={name:"",icon:"👩",age:70,title:"แผนประกันชีวิต",taxNote:"ใบเสนอขายไม่ได้คำนวณลดหย่อนภาษี (ฐานภาษี 0%) · ของแถมฟรี: TI (ภาวะเจ็บป่วยระยะสุดท้าย) และ WPCI (ยกเว้นเบี้ยเมื่อเป็นโรคร้ายแรง 44 โรค)"};
+const PLANS=[{"code": "Pay Life Plus 20Pay (NP)", "th": "เอไอเอ ตลอดชีพ พลัส ชำระเบี้ย 20 ปี (ไม่มีเงินปันผล) · แถมฟรี TI 270,000 + WPCI 300,000", "type": "ตลอดชีพ", "sa": 300000, "prem": 24729, "payYears": 20, "startAge": 70, "tax": null, "taxRate": 0, "cover": "ตลอดชีพ ถึงอายุ 99 ปี", "cashNote": "ไม่มีเงินคืนระหว่างทาง · ครบสัญญาอายุ 99 รับ 494,700 บาท", "death": [300000, 300000, 300000, 300000, 300000, 300000, 300000, 300000, 300000, 300000, 300000, 300000, 321477, 346206, 370935, 395664, 420393, 445122, 469851, 494580, 494580, 494580, 494580, 494580, 494580, 494580, 494580, 494580, 494700], "cash": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 494700], "riders": [{"n": "🫁 TI (ฟรี)", "sa": 270000, "d": "ภาวะเจ็บป่วยระยะสุดท้าย · จ่ายผลประโยชน์ + ยกเว้นเบี้ย"}, {"n": "📋 WPCI (ฟรี)", "sa": 300000, "d": "โรคร้ายแรง 44 โรค · ยกเว้นเบี้ย คุ้มครองต่อ"}]}];
+</script>
+<script src="../plan-template.js?v=3"></script><script>(function(){const n=document.querySelector('.note');if(!n)return;n.insertAdjacentHTML('beforebegin',`<div class="sec"><h3>🎁 สัญญาเพิ่มเติมที่แถมฟรี (ไม่ต้องจ่ายเบี้ยเพิ่ม)</h3>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;font-size:14px;line-height:1.6">
+<div style="background:#fff7ed;border-radius:10px;padding:12px 14px"><b>🫁 AIA TI · 270,000 บาท</b><br>ภาวะเจ็บป่วยระยะสุดท้าย<br>• ถ้าแพทย์ผู้เชี่ยวชาญวินิจฉัยว่าอยู่ในภาวะเจ็บป่วยระยะสุดท้าย บริษัทจ่ายผลประโยชน์ตามสัญญา<br>• และ<b>ยกเว้นเบี้ยสัญญาหลัก</b>หลังจ่ายผลประโยชน์แล้ว</div>
+<div style="background:#ecfeff;border-radius:10px;padding:12px 14px"><b>📋 AIA WPCI · 300,000 บาท</b><br>ยกเว้นเบี้ยเมื่อเป็นโรคร้ายแรง<br>• ถ้าเป็นโรคร้ายแรงระดับรุนแรง 1 ใน <b>44 โรค</b> บริษัท<b>ยกเว้นเบี้ยสัญญาหลักทั้งหมด</b> (ทุน WPCI เท่ากับทุนสัญญาหลัก)<br>• ไม่ต้องจ่ายเบี้ยต่อ แต่ยังคุ้มครองตามเดิม</div></div>
+<div style="font-size:12px;color:var(--m);margin-top:8px">* นิยามและเงื่อนไขเป็นไปตามที่ระบุในสัญญา TI และ WPCI</div></div>`)})();</script>
+<script>(function(){const SV=[0, 9300, 27000, 45600, 64200, 85200, 108300, 127500, 147600, 168600, 191400, 216000, 241200, 267000, 292800, 319200, 345900, 373200, 400500, 428700, 433500, 438000, 442500, 447300, 452100, 458100, 465600, 476700, 494700],P=24729,A0=70,f=n=>Math.round(n).toLocaleString('en-US');
+let be=null;const rows=SV.map((v,i)=>{const cp=P*Math.min(i+1,20),d=v-cp;if(be===null&&d>=0)be=A0+i;return{a:A0+i,cp,v,d,pc:cp?v/cp*100:0}});
+const tr=rows.map(r=>`<tr${r.a===be?' style="background:#dcfce7"':''}><td>${r.a}${r.a===be?' 🎯':''}</td><td>${f(r.cp)}</td><td>${r.v?f(r.v):'-'}</td><td style="color:${r.d>=0?'#16a34a':'#dc2626'};font-weight:600">${r.d>=0?'+':''}${f(r.d)}</td><td>${r.pc.toFixed(0)}%</td></tr>`).join('');
+const h=`<div class="sec"><h3>🔄 กรณีเวนคืนกรมธรรม์</h3>
+<div style="font-size:14px;line-height:1.7;margin-bottom:8px">🎯 เวนคืนแล้ว<b>ไม่ขาดทุนเมื่ออายุ ${be}</b> (ได้ ${f(SV[be-A0])} vs จ่าย ${f(P*20)}) · ก่อนหน้านั้นเวนคืนจะได้น้อยกว่าเบี้ยที่จ่าย</div>
+<details><summary style="cursor:pointer;color:var(--aia);font-weight:600">▶ ดูตารางเวนคืนรายปี</summary>
+<div style="font-size:12px;color:var(--t2);margin:6px 0">เงินค่าเวนคืน ณ ปีกรมธรรม์นั้น เทียบเบี้ยหลักสะสม (ไม่รวมสัญญาเพิ่มเติม)</div>
+<div style="overflow-x:auto"><table class="ft"><tr><th>อายุ</th><th>เบี้ยสะสม</th><th>เงินค่าเวนคืน</th><th>กำไร/ขาดทุน</th><th>% ของเบี้ย</th></tr>${tr}</table></div></details></div>`;
+const n=document.querySelector('.note')||document.getElementById('app');if(n)n.insertAdjacentHTML(n.classList&&n.classList.contains('note')?'beforebegin':'beforeend',h)})();</script>
+</body></html>
