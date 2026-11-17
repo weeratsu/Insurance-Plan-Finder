@@ -1,3 +1,4 @@
+(function(){var s=document.createElement('style');s.textContent='#tbl{border-collapse:separate;border-spacing:0}#tbl th,#tbl td{border-right:2px solid #f7c6d3}#tbl tr>*:last-child{border-right:0}#tbl tr.hn th{vertical-align:bottom;padding-bottom:4px;border-bottom:0}#tbl tr.ht th{vertical-align:top;padding-top:0;padding-bottom:2px;border-bottom:0}#tbl tr.hc th{vertical-align:top;padding-top:0;border-bottom:2px solid #f7c6d3}#tbl .bt{display:inline-block;background:#ecfdf5;color:#065f46;border-radius:10px;padding:3px 8px;font-size:11px;font-weight:600;line-height:1.35}#tbl tr.hc small{color:#D31145;font-size:11px}#tbl td{vertical-align:middle}';document.head.appendChild(s)})();
 
 let BASE=2539;
 const f=n=>(typeof n==='number'&&!isNaN(n))?n.toLocaleString('en-US'):'รอเสนอ';
@@ -17,7 +18,7 @@ function render(d){BASE=d.base||2539;
  document.getElementById('grid').innerHTML=P.map(o=>`<div class="c${o.cls}"><span class="tag${o.tag.startsWith('⏰')?'':' g'}">${o.tag}</span><h2>${o.nm}</h2><div class="sub">${o.sub}</div>${o.x}
  ${o.lim!=='–'?row('วงเงินคุ้มครอง',o.lim):''}${row('ค่าห้อง/วัน',o.room)}${o.opd?row('OPD',o.opd):row('OPD','ไม่คุ้มครอง',1)}${row('เบี้ยสุขภาพ',f(d[o.k]))}${tot(d[o.k])}</div>`).join('');
  const dif=v=>v===mn?'–':'+'+f(v-mn),R=(l,fn)=>`<tr><td>${l}</td>${P.map(o=>`<td>${fn(o)}</td>`).join('')}</tr>`;
- document.getElementById('tbl').innerHTML=`<tr><th>รายการ</th>${P.map(o=>`<th>${o.nm}<br><span style="display:inline-block;margin-top:4px;background:#ecfdf5;color:#065f46;border-radius:10px;padding:2px 8px;font-size:11px;font-weight:600">${o.best}</span>${o.x.includes('ปิดการขาย')?'<br><small>⏰ ปิดขาย 30 พ.ย.</small>':''}</th>`).join('')}</tr>`+
+ document.getElementById('tbl').innerHTML=`<tr class="hn"><th rowspan="3">รายการ</th>${P.map(o=>`<th>${o.nm}</th>`).join('')}</tr><tr class="ht">${P.map(o=>`<th><span class="bt">${o.best}</span></th>`).join('')}</tr><tr class="hc">${P.map(o=>`<th>${o.x.includes('ปิดการขาย')?'<small>⏰ ปิดขาย 30 พ.ย.</small>':''}</th>`).join('')}</tr>`+
  R('ค่าห้อง/วัน',o=>o.room)+R('OPD สูงสุด/ปี',o=>o.opd?`${o.opdY}<br><small style="color:var(--t2)">(${o.opd})</small>`:'–')+R('ค่าใช้จ่ายร่วม',o=>o.cp)+R('เบี้ยสุขภาพ/ปี',o=>`<b>${f(d[o.k])}</b>`)+R('ส่วนต่างจากแผนประหยัดสุด',o=>dif(d[o.k]));
  document.getElementById('note').innerHTML=`* เบี้ยที่แสดงเป็น<b>เบี้ยสุขภาพล้วน</b> ยังไม่รวมเบี้ยสัญญาหลัก ${f(BASE)} บาท/ปี (ต้องซื้อคู่กัน)<br>* เบี้ยประกันสำหรับ${d.lbl} เป็นตัวเลขประมาณการ อาจเปลี่ยนแปลงตามการพิจารณารับประกันของบริษัท<br>* OPD สูงสุด/ปี = วงเงินต่อครั้ง × จำนวนครั้ง · เบี้ยรายเดือนเป็นค่าเฉลี่ย (เบี้ยรายปี ÷ 12)<br>* โปรดศึกษารายละเอียดความคุ้มครองและเงื่อนไขในกรมธรรม์ก่อนตัดสินใจ`;
 }
