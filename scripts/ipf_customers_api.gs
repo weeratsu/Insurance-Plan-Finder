@@ -6,7 +6,7 @@
  * POST (text/plain) JSON {token, action:'get'} | {token, action:'save', rows:[...]}
  * Safety: 'save' with 0 rows is refused if the sheet has data; every save keeps the previous copy in tab "History".
  */
-var COLS = ['id', 'name', 'sex', 'age', 'dob', 'icon', 'pages', 'note', 'updated_at'];
+var COLS = ['id', 'name', 'sex', 'age', 'dob', 'icon', 'pages', 'note', 'updated_at', 'bought'];
 function setup() {
   var ss = SpreadsheetApp.getActive();
   ['Customers', 'History'].forEach(function (n) { if (!ss.getSheetByName(n)) ss.insertSheet(n); });
@@ -45,6 +45,7 @@ function read_(sh) {
   return sh.getRange(2, 1, n, COLS.length).getValues().filter(function (r) { return r[0] !== ''; }).map(function (r) {
     var o = {}; COLS.forEach(function (c, i) { o[c] = r[i] instanceof Date ? Utilities.formatDate(r[i], 'Asia/Bangkok', 'yyyy-MM-dd') : r[i]; });
     try { o.pages = o.pages ? JSON.parse(o.pages) : []; } catch (e) { o.pages = []; }
+    try { o.bought = o.bought ? JSON.parse(o.bought) : null; } catch (e) { o.bought = null; }
     return o;
   });
 }
