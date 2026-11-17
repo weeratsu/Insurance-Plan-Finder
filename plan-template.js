@@ -7,7 +7,7 @@ window.CUSTLBL=()=>CUST.name||((CUST.icon==='👩'?'เพศหญิง':'เ�
 document.title=(CUST.title||'แผนออมทรัพย์')+' · '+(CUST.icon==='👩'?'หญิง':'ชาย')+' '+CUST.age+' ปี';
 document.body.insertAdjacentHTML('afterbegin','<div class="wrap"><div class="hd"><div><h1 id="t1"></h1><p id="t2"></p></div><div class="cust" style="background:rgba(255,255,255,.18);padding:8px 14px;border-radius:20px">'+CUST.icon+' '+(CUST.name||(CUST.icon==='👩'?'หญิง':'ชาย'))+' · อายุ '+CUST.age+' ปี'+(CUST.bought?' · <b>✅ ซื้อแล้ว</b>':'')+'</div></div>'+
   '<div id="tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:16px"></div><div id="app"></div>'+
-  '<div class="note">* เป็นตัวอย่างเพื่อความเข้าใจเท่านั้น รายละเอียดความคุ้มครองจะระบุในกรมธรรม์<br>* '+(CUST.taxNote||'ลดหย่อนภาษีคำนวณตามฐานภาษีในใบเสนอขาย (ใช้สิทธิ์ได้ตามจริงไม่เกิน 100,000 บาท/ปี)')+'<br>* เงินคืนรายงวดจ่าย ณ สิ้นปีกรมธรรม์ ตามอัตรา % ของจำนวนเงินเอาประกันภัย</div></div>');
+  '<div class="note">* เป็นตัวอย่างเพื่อความเข้าใจเท่านั้น รายละเอียดความคุ้มครองจะระบุในกรมธรรม์<br>* '+'ลดหย่อนภาษีคำนวณตามฐานภาษีที่เลือก (ใช้สิทธิ์ได้ตามจริงไม่เกิน 100,000 บาท/ปี รวมกับกรมธรรม์อื่น)'+'<br>* เงินคืนรายงวดจ่าย ณ สิ้นปีกรมธรรม์ ตามอัตรา % ของจำนวนเงินเอาประกันภัย</div></div>');
 var t1=document.getElementById('t1'),t2=document.getElementById('t2'),tabs=document.getElementById('tabs'),app=document.getElementById('app');
 const f=n=>Math.round(n).toLocaleString('en-US');
 const S=p=>{const paid=p.prem*p.payYears,back=p.cash.reduce((a,b)=>a+b,0),end=p.startAge+p.payYears-1,last=p.startAge+p.cash.length-1,fc=p.startAge+p.cash.findIndex(v=>v>0);let cp=0,cr=0,be=null;for(let i=0;i<p.cash.length;i++){if(p.startAge+i<=end)cp+=p.prem;cr+=p.cash[i];if(be===null&&cr>=cp){be=p.startAge+i;break}}return{paid,back,end,last,fc,be,gain:back-paid,x:back/paid}};
@@ -78,5 +78,10 @@ function advice(wins){if(PLANS.length<2)return '';const j=a=>a.length<2?a.join('
  const L=PLANS.map((p,i)=>{const w=[...new Set(wins[i].map(x=>ADV[x]).filter(Boolean))];if(!w.length)return '';const s=S(p);
   return `<li style="margin-bottom:8px">ถ้าต้องการ<b>${j(w)}</b> → เลือก <a href="#" onclick="render(${i});return false" style="color:var(--aia);font-weight:700">${p.code}</a><br><span style="color:var(--t2);font-size:13px">จ่าย ${f(p.prem)}/ปี × ${p.payYears} ปี · ได้คืนรวม ${f(s.back)} · คุ้มครอง ${p.cover}</span></li>`}).join('');
  return L?`<div class="sec"><h3>💬 แผนไหนเหมาะกับคุณ</h3><ul style="margin:0;padding-left:20px;font-size:14px;line-height:1.6">${L}</ul></div>`:''}
+var TRS=[0,5,10,15,20,25,30,35],TR0=PLANS.find(p=>p.taxRate)?.taxRate,TR=+(localStorage.getItem('ipf_tr')??(TR0??0));
+function applyTR(){PLANS.forEach(p=>{const d=Math.min(p.prem,100000)*p.payYears;p.tax=TR?Math.round(d*TR/100):0;p.taxRate=TR;p.taxDed=d})}applyTR();
+var _cur=PLANS.length,_rd=render;render=function(i){_cur=i;return _rd(i)};window.render=render;
+window.setTR=function(v){TR=+v;localStorage.setItem('ipf_tr',TR);applyTR();render(_cur)};
+tabs.insertAdjacentHTML('beforebegin',`<div style="margin-top:12px;font-size:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">🧾 ฐานภาษีขั้นบันได <select onchange="setTR(this.value)" style="padding:6px 10px;border:1px solid var(--b);border-radius:8px;font:inherit">${TRS.map(r=>`<option value="${r}"${r===TR?' selected':''}>${r?r+'%':'ไม่เสียภาษี / ไม่ใช้สิทธิ์'}</option>`).join('')}</select><span style="color:var(--t2);font-size:12px">คิดจากเบี้ยไม่เกิน 100,000/ปี × ปีที่จ่าย</span></div>`);
 tabs.innerHTML=PLANS.map((p,i)=>`<button class="tb" onclick="render(${i})">${CUST.bought&&CUST.bought.plans.includes(i)?'✅ ':''}${i+1}. ${p.code}</button>`).join('')+`<button class="tb" onclick="render(${PLANS.length})">⚖️ เปรียบเทียบ</button>`;
 render(CUST.bought&&PLANS[CUST.bought.plan]?CUST.bought.plan:PLANS.length);
