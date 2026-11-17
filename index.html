@@ -3,7 +3,7 @@
 <title>Insurance Plan Finder · AIA</title>
 <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon.svg"><meta name="theme-color" content="#D31145"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css"></head><body><div class="wrap home">
 <div class="hd"><div><h1>🩺 Insurance Plan Finder</h1><p>สรุปแผนประกันสุขภาพ AIA</p></div><div id="myPol" style="display:none;position:relative"><button onclick="myT()" style="background:rgba(255,255,255,.18);color:#fff;border:0;padding:8px 14px;border-radius:20px;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap">🛡️ ประกันของฉัน ▾</button><div id="myM" style="display:none;position:absolute;right:0;top:110%;background:#fff;color:#111;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:8px;min-width:280px;z-index:50;font-size:14px"></div></div></div>
-<script>if(/[?&]admin/.test(location.search))document.getElementById("myPol").style.display="inline-block";
+<script>
 const MYK='ipf_my_pages';function myG(){try{return JSON.parse(localStorage.getItem(MYK))||['allianz-self']}catch(e){return['allianz-self']}}
 function myT(){const m=document.getElementById('myM');m.style.display=m.style.display==='none'?'block':'none';if(m.style.display==='block')myD()}
 function myD(){const P=Object.entries(typeof CUSTOMERS!=='undefined'?CUSTOMERS:{}),sel=myG(),m=document.getElementById('myM');
@@ -13,7 +13,7 @@ function myS(id,on){let a=myG().filter(x=>x!==id);if(on)a.push(id);localStorage.
 document.addEventListener('click',e=>{const w=document.getElementById('myPol');if(w&&!w.contains(e.target))document.getElementById('myM').style.display='none'})</script>
 <div id="amenu" style="display:none;margin-top:14px;background:#fff;border:1px solid var(--b);border-radius:14px;padding:10px;gap:8px;flex-wrap:wrap">
 <b style="width:100%;font-size:13px;color:var(--t2);padding:0 4px">🔐 เมนูจัดการ</b>
-<a href="customers.html" class="mn">👤 จัดการลูกค้า</a><a href="setup.html" class="mn">⚙️ จัดการหน้าแผน</a><a href="#" class="mn" onclick="myT();return false">🛡️ ประกันของฉัน</a><a href="#net" class="mn">🏥 ค้นหา รพ.</a></div>
+<a href="customers.html" class="mn">👤 จัดการลูกค้า</a><a href="setup.html" class="mn">⚙️ จัดการหน้าแผน</a><a href="#net" class="mn">🏥 ค้นหา รพ.</a></div>
 <style>.mn{flex:1 1 150px;text-align:center;padding:12px;border-radius:10px;background:#fdeef2;color:#D31145;text-decoration:none;font-weight:600}.mn:hover{background:#D31145;color:#fff}</style>
 <script>if(/[?&]admin/.test(location.search))document.getElementById('amenu').style.display='flex'</script>
 <div class="warn" style="margin-top:16px">⏰ <b>Health Saver และ Health Happy เปิดขายถึง 30 พ.ย. 2569 เท่านั้น</b> — หลังจากนั้นจะมีแผนใหม่มาแทน ซึ่งอาจมี<b>ค่าใช้จ่ายร่วม (Co-payment) เป็น %</b></div>
