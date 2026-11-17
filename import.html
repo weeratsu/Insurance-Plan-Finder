@@ -5,12 +5,20 @@
 <style>body{font-family:'Inter','Noto Sans Thai',sans-serif;background:#f7f7f9;margin:0;color:#1f2937}.w{max-width:1000px;margin:0 auto;padding:16px}
 .hd{background:#D31145;color:#fff;border-radius:16px;padding:16px 20px}.hd h1{margin:0;font-size:20px}.c{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px;margin-top:14px}
 .b{border:0;border-radius:8px;padding:9px 16px;font:inherit;cursor:pointer;background:#D31145;color:#fff;text-decoration:none;display:inline-block}.b2{background:#eee;color:#111}
-textarea{width:100%;box-sizing:border-box;font:12px monospace;border:1px solid #e5e7eb;border-radius:8px;padding:8px}.err{color:#dc2626}.ok{color:#16a34a}iframe{width:100%;height:640px;border:1px solid #e5e7eb;border-radius:10px}</style></head><body><div class="w">
+textarea{width:100%;box-sizing:border-box;font:12px monospace;border:1px solid #e5e7eb;border-radius:8px;padding:8px}.err{color:#dc2626}.ok{color:#16a34a}iframe{width:100%;height:640px;border:1px solid #e5e7eb;border-radius:10px}</style><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<style>body,button,input,textarea,select{font-family:'Inter','Noto Sans Thai',sans-serif!important}
+.b{border-radius:10px!important;font-weight:600;font-size:14px!important;transition:.15s}.b:hover{filter:brightness(.95)}
+.b2{background:#fdeef2!important;color:#D31145!important;border:1px solid #f7c6d3!important}
+input[type=file]{font-size:14px;color:#555}input[type=file]::file-selector-button{font:inherit;font-weight:600;border:0;border-radius:10px;padding:8px 14px;margin-right:10px;background:#D31145;color:#fff;cursor:pointer}
+input[type=file]::file-selector-button:hover{filter:brightness(.95)}
+.ok{color:#16a34a;font-weight:600}</style>
+</head><body><div class="w">
 <div class="hd"><h1>📥 นำเข้าแผนจาก Excel</h1></div>
 <div class="c"><b>1.</b> ดาวน์โหลดแม่แบบ → กรอกข้อมูล <a class="b b2" href="plan_import_template.xlsx" download>⬇️ plan_import_template.xlsx</a>
 <div style="margin-top:12px"><b>2.</b> เลือกไฟล์ที่กรอกแล้ว <input type="file" id="f" accept=".xlsx,.xls"></div><div id="msg" style="margin-top:8px;font-size:14px"></div></div>
 <div class="c" id="out" style="display:none"><b>3.</b> ตัวอย่างหน้า<div style="margin:8px 0"><a class="b" id="dl">⬇️ ดาวน์โหลด <span id="fn"></span></a> → วางไว้ในโฟลเดอร์ <code>plans/</code></div>
 <iframe id="pv"></iframe>
+<div style="margin:12px 0;padding:12px;background:#fdeef2;border-radius:10px"><b>⚡ บันทึกลงเครื่องอัตโนมัติ</b> (Chrome/Edge บนคอม)<br><button class="b b2" onclick="pickDir()">📂 เลือกโฟลเดอร์โปรเจกต์</button> <button class="b" onclick="saveLocal()">💾 บันทึก</button> <span id="dirn" style="font-size:13px"></span><div id="smsg" style="margin-top:6px;font-size:14px"></div></div>
 <div style="margin-top:12px"><b>4.</b> คัดลอกบรรทัดนี้ไปวางใน <code>data/customers.js</code> (ก่อน <code>};</code>) <button class="b b2" onclick="navigator.clipboard.writeText(cj.value)">📋 คัดลอก</button></div><textarea id="cj" rows="3"></textarea></div></div>
 <script>
 const $=id=>document.getElementById(id),num=v=>v===''||v==null?null:+String(v).replace(/,/g,'');
@@ -53,10 +61,28 @@ const PLANS=${JSON.stringify(PL)};
 <script src="../plan-template.js?v=3"><\/script>
 ${svJs}
 </body></html>`;
- const blob=new Blob([html],{type:'text/html'}),fn=pg.file.replace(/\.html$/,'')+'.html';$('dl').href=URL.createObjectURL(blob);$('dl').download=fn;$('fn').textContent=fn;
+ const blob=new Blob([html],{type:'text/html'}),fn=pg.file.replace(/\.html$/,'')+'.html';$('dl').href=URL.createObjectURL(blob);$('dl').download=fn;window._H=html;window._FN=fn;$('fn').textContent=fn;
  $('pv').srcdoc=html.replace(/\.\.\//g,'');
  const cat=pg.cat||'life',lbl=(pg.label||({life:'ประกันชีวิต',savings:'ออมทรัพย์',health:'สุขภาพ',mpci:'MPCI Plus',ahc:'Health Cancer',annuity:'บำนาญ'}[cat]||title))+' · '+sx+' '+age;
- $('cj').value=` "${pg.id}":{brand:"${pg.brand||'aia'}",cat:"${cat}",kind:"${pg.kind}",g:"${pg.sex}",age:${age},plans:${JSON.stringify(PL.map(p=>[p.code,p.sa,p.prem]))},icon:"${icon}",lbl:"${lbl}",url:"plans/${fn}"},`;
+ $('cj').value=` "${pg.id}":{brand:"${pg.brand||'aia'}",cat:"${cat}",kind:"${pg.kind}",g:"${pg.sex}",age:${age},plans:${JSON.stringify(PL.map(p=>[p.code,p.sa,p.prem]))},icon:"${icon}",lbl:"${lbl}",url:"plans/${fn}"},`;window._ID=pg.id;
  $('msg').innerHTML=`<div class="ok">✅ อ่านได้ ${PL.length} แผน · ${PL[0].death.length} ปี${sv?' · มีตารางเวนคืน':''}</div>`;$('out').style.display='block'}
  catch(err){$('msg').innerHTML='<div class="err">❌ อ่านไฟล์ไม่ได้: '+err.message+'</div>'}};
+</script><script>
+let DIR=null;const IDB=()=>new Promise((ok,no)=>{const r=indexedDB.open('ipf_fs',1);r.onupgradeneeded=()=>r.result.createObjectStore('h');r.onsuccess=()=>ok(r.result);r.onerror=no});
+async function idb(k,v){const d=await IDB();return new Promise(ok=>{const t=d.transaction('h',v===undefined?'readonly':'readwrite').objectStore('h');const q=v===undefined?t.get(k):t.put(v,k);q.onsuccess=()=>ok(q.result);q.onerror=()=>ok(null)})}
+(async()=>{try{DIR=await idb('dir');if(DIR)$('dirn').textContent='📁 '+DIR.name}catch(e){}})();
+async function pickDir(){if(!window.showDirectoryPicker){$('smsg').innerHTML='❌ เบราว์เซอร์นี้ไม่รองรับ ใช้ Chrome/Edge บนคอม';return}
+ try{DIR=await showDirectoryPicker({mode:'readwrite'});await idb('dir',DIR);$('dirn').textContent='📁 '+DIR.name}catch(e){}}
+async function saveLocal(){const m=$('smsg');try{if(!window._H){m.innerHTML='❌ ยังไม่ได้เลือกไฟล์ Excel';return}
+ if(!DIR){await pickDir();if(!DIR)return}
+ if(await DIR.queryPermission({mode:'readwrite'})!=='granted'&&await DIR.requestPermission({mode:'readwrite'})!=='granted'){m.innerHTML='❌ ไม่ได้รับอนุญาต';return}
+ let pd,dd;try{pd=await DIR.getDirectoryHandle('plans');dd=await DIR.getDirectoryHandle('data')}catch(e){m.innerHTML='❌ ไม่พบโฟลเดอร์ plans/ หรือ data/ — เลือกโฟลเดอร์ Insurance Plan Finder ให้ถูก';return}
+ let ex=false;try{await pd.getFileHandle(_FN);ex=true}catch(e){}
+ if(ex&&!confirm('มีไฟล์ plans/'+_FN+' อยู่แล้ว เขียนทับ?'))return;
+ const w=await(await pd.getFileHandle(_FN,{create:true})).createWritable();await w.write(_H);await w.close();
+ const ch=await dd.getFileHandle('customers.js');let c=await(await ch.getFile()).text();const line=$('cj').value.replace(/,\s*$/,'')+',';
+ const re=new RegExp('^\\s*"'+_ID.replace(/[.*+?^${}()|[\]\\-]/g,'\\$&')+'"\\s*:\\s*\\{.*$','m');let act;
+ if(re.test(c)){c=c.replace(re,line);act='อัปเดต'}else{const i=c.indexOf('CUSTOMERS'),j=c.indexOf('\n};',i);if(i<0||j<0)throw new Error('หา CUSTOMERS ใน customers.js ไม่เจอ');c=c.slice(0,j)+'\n'+line+c.slice(j);act='เพิ่ม'}
+ const cw=await ch.createWritable();await cw.write(c);await cw.close();
+ m.innerHTML=`✅ บันทึก plans/${_FN} และ${act} "${_ID}" ใน data/customers.js แล้ว → push ด้วย GitHub Desktop`}catch(e){m.innerHTML='❌ '+e.message}}
 </script><script src="js/admin-nav.js"></script></body></html>
