@@ -3,7 +3,7 @@
 <body><div class="w"><div class="hd"><h1>⚙️ ตั้งค่า</h1></div>
 <div class="cd"><h3>🔗 เชื่อม Google Sheet</h3><p id="st"></p><br><label>Endpoint (Apps Script URL)<input id="e"></label><label>Token<input id="t" type="password"></label>
 <button class="p" onclick="sv()">✓ บันทึก</button> <button onclick="localStorage.removeItem('ipf_sheet_cfg');ld();msg('ล้างค่าแล้ว')">ล้างค่า</button><p style="margin-top:8px;font-size:12px">เก็บเฉพาะเบราว์เซอร์นี้ ไม่ขึ้น GitHub · ต้องตั้งทีละเครื่อง</p></div>
-<div class="g"><a class="cd" href="setup.html"><h3>🗂️ จัดการหน้าแผน</h3><p>แก้ยี่ห้อ / ประเภท / ชนิด / เพศ / อายุ ของแต่ละหน้า</p></a><a class="cd" href="import.html"><h3>📥 นำเข้าแผน</h3><p>สร้างหน้าแผนจากไฟล์ Excel (หลายแผนได้)</p></a></div></div>
+<div class="g"><a class="cd" href="setup.html"><h3>🗂️ จัดการหน้าแผน</h3><p>แก้ยี่ห้อ / ประเภท / ชนิด / เพศ / อายุ ของแต่ละหน้า</p></a><a class="cd" href="import.html"><h3>📥 นำเข้าแผน</h3><p>สร้างหน้าแผนจากไฟล์ Excel (หลายแผนได้)</p></a><a class="cd" href="hospitals-edit.html"><h3>🏥 แก้ไขรายชื่อ รพ.</h3><p>เพิ่ม/ลบ/แก้ รพ. AIA Smart Network · Import/Export Excel</p></a></div></div>
 <script src="js/config-sheet.js" onerror="0"></script><script src="js/admin-nav.js"></script>
 <script>function cur(){try{return JSON.parse(localStorage.getItem('ipf_sheet_cfg'))}catch(x){}}
 function ld(){const c=cur()||window.IPF_SHEET||{};e.value=c.endpoint||'';t.value=c.token||'';st.textContent=cur()?'✅ ใช้ค่าที่ตั้งในเบราว์เซอร์นี้':(window.IPF_SHEET&&window.IPF_SHEET.endpoint?'✅ ใช้ค่าจาก config-sheet.js (local)':'⚠️ ยังไม่ได้ตั้งค่า')}

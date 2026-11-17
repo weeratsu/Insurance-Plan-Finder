@@ -4,10 +4,10 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon.svg"><meta name="theme-color" content="#D31145"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css"></head><body><div class="wrap home"><div class="hd"><div><h1>🏥 ค้นหาโรงพยาบาล</h1><p>AIA Smart Network · <a href="index.html" style="color:#fff">← หน้าแรก</a></p></div></div>
 <div class="net" id="net">
  <b style="color:var(--aia);font-size:17px">🏥 รพ. เอกชนใน AIA Smart Network</b>
- <div style="font-size:13px;color:var(--t2);margin:4px 0 10px">Health Starter: ใช้ รพ. ในเครือข่าย ไม่ต้องจ่ายร่วม · รวม <b>สถานพยาบาลของรัฐทุกแห่ง</b> (ประกาศ ณ 18 พ.ย. 2569)</div>
+ <div style="font-size:13px;color:var(--t2);margin:4px 0 10px">Health Starter: ใช้ รพ. ในเครือข่าย ไม่ต้องจ่ายร่วม · รวม <b>สถานพยาบาลของรัฐทุกแห่ง</b> (ประกาศ ณ <span id="ndt">18 พ.ย. 2569</span>)</div>
  <input id="nq" placeholder="🔍 พิมพ์ชื่อ รพ. หรือจังหวัด เช่น บางปะกอก, เชียงใหม่" oninput="netR()">
  <div id="nr" style="margin:8px 0"></div>
  <div id="nc" style="font-size:12px;color:var(--t2);margin-bottom:6px"></div>
  <div id="nl"></div>
 </div>
-</div><script src="js/network.js"></script><script>if(/[?&]admin/.test(location.search)||localStorage.getItem('ipf_sheet_cfg')){const s=document.createElement('script');s.src='js/admin-nav.js';document.body.appendChild(s)}</script></body></html>
+</div><script src="js/network.js"></script><script>ndt.textContent=NET_DATE</script><script>if(/[?&]admin/.test(location.search)||localStorage.getItem('ipf_sheet_cfg')){const s=document.createElement('script');s.src='js/admin-nav.js';document.body.appendChild(s)}</script></body></html>

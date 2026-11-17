@@ -139,8 +139,8 @@ L.forEach(c=>{const nm=c.name||'-',u='customer.html?id='+encodeURIComponent(c.id
  if(c.dob)yr(c.dob,d=>E.push({k:'bd',d,t:'🎂',s:`วันเกิด ${nm} (ครบ ${d.getFullYear()-new Date(c.dob).getFullYear()} ปี)`,u}));
  (Array.isArray(c.bought)?c.bought:c.bought?[c.bought]:[]).filter(x=>!x.status||['bought','active'].includes(x.status)).forEach(x=>{const pn=x.name||x.rider||'กรมธรรม์';
   yr(x.pd||x.date,d=>E.push({k:'pay',d,t:'💰',nm,pn,s:`${nm} · ${pn}`,a:+x.prem||0,m:[x.au?'🔁 Auto':'',x.kind==='rider'||x.rider?'⚠️ เบี้ยสัญญาเพิ่มเติมอาจเปลี่ยนตามอายุ':''].filter(Boolean).join(' · '),u}));
-  const ds=x.date&&new Date(x.date);if(inW(ds))E.push({k:'start',d:ds,t:'🟢',s:`เริ่มกรมธรรม์ ${nm} · ${pn}`,u});
-  const de=x.end&&new Date(x.end);if(inW(de))E.push({k:'end',d:de,t:'🏁',s:`ครบสัญญา ${nm} · ${pn}`,u})})});
+  const ds=x.date&&new Date(x.date);if(inW(ds))E.push({k:'start',d:ds,t:'🟢',nm,pn,s:`เริ่มกรมธรรม์ ${nm} · ${pn}`,u});
+  const de=x.end&&new Date(x.end);if(inW(de))E.push({k:'end',d:de,t:'🏁',nm,pn,s:`ครบสัญญา ${nm} · ${pn}`,u})})});
 const TK=JSON.parse(localStorage.getItem('ipf_tl_f')||'["bd","pay","start","end"]');
 const R=E.filter(e=>TK.includes(e.k)).sort((a,b)=>a.d-b.d),dd=e=>Math.round((e.d-T)/864e5);
 const D=d=>d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
@@ -148,12 +148,12 @@ const sumF=R.filter(e=>e.d>=T).reduce((s,e)=>s+(e.a||0),0),sumP=R.filter(e=>e.d<
 const row=e=>{const n=dd(e),past=n<0;return `<a href="${e.u}" style="display:flex;gap:10px;align-items:center;padding:8px 6px;border-bottom:1px solid var(--b);text-decoration:none;color:inherit;${past?'opacity:.55':''}">
 <span style="min-width:86px;font-weight:600">${D(e.d)}</span><span>${e.t}</span><span style="flex:1">${e.s}${e.m?` <small style="color:var(--t2)">${e.m}</small>`:''}</span>
 ${e.a?`<b style="color:var(--aia)">${fm(e.a)}</b>`:''}<small style="color:${!past&&n<=7?'#dc2626':'var(--t2)'};min-width:64px;text-align:right">${n===0?'วันนี้':past?(-n)+' วันก่อน':'อีก '+n+' วัน'}</small></a>`};
-const grp=a=>{const G=[];a.forEach(e=>{const g=e.k==='pay'&&G.find(x=>x.k==='pay'&&x.u===e.u&&+x.d===+e.d);if(g){g.items.push(e);g.a+=e.a||0}else G.push(e.k==='pay'?{...e,items:[e],a:e.a||0}:e)});return G};
+const grp=a=>{const G=[];a.forEach(e=>{const K=['pay','start','end'].includes(e.k),g=K&&G.find(x=>x.k===e.k&&x.nm===e.nm&&+x.d===+e.d);if(g){g.items.push(e);g.a+=e.a||0}else G.push(K?{...e,items:[e],a:e.a||0}:e)});return G};
 const grow=g=>{if(!g.items||g.items.length<2)return row(g.items?g.items[0]:g);const n=dd(g),past=n<0;
 return `<details style="border-bottom:1px solid var(--b);${past?'opacity:.55':''}"><summary style="display:flex;gap:10px;align-items:center;padding:8px 6px;cursor:pointer;list-style:none">
-<span style="min-width:86px;font-weight:600">${D(g.d)}</span><span>💰</span><span style="flex:1">${g.nm} · <b>${g.items.length} กรมธรรม์</b> <small style="color:var(--t2)">▾ กดดูรายการ</small></span>
-<b style="color:var(--aia)">${fm(g.a)}</b><small style="color:${!past&&n<=7?'#dc2626':'var(--t2)'};min-width:64px;text-align:right">${n===0?'วันนี้':past?(-n)+' วันก่อน':'อีก '+n+' วัน'}</small></summary>
-<div style="padding:0 6px 6px 106px">${g.items.map(e=>`<a href="${e.u}" style="display:flex;gap:8px;padding:4px 0;font-size:14px;text-decoration:none;color:inherit"><span style="flex:1">${e.pn}${e.m?` <small style="color:var(--t2)">${e.m}</small>`:''}</span><span>${fm(e.a)}</span></a>`).join('')}</div></details>`};
+<span style="min-width:86px;font-weight:600">${D(g.d)}</span><span>${g.t}</span><span style="flex:1">${{start:'เริ่มกรมธรรม์ ',end:'ครบสัญญา '}[g.k]||''}${g.nm} · <b>${g.items.length} กรมธรรม์</b> <small style="color:var(--t2)">▾ กดดูรายการ</small></span>
+${g.a?`<b style="color:var(--aia)">${fm(g.a)}</b>`:''}<small style="color:${!past&&n<=7?'#dc2626':'var(--t2)'};min-width:64px;text-align:right">${n===0?'วันนี้':past?(-n)+' วันก่อน':'อีก '+n+' วัน'}</small></summary>
+<div style="padding:0 6px 6px 106px">${g.items.map(e=>`<a href="${e.u}" style="display:flex;gap:8px;padding:4px 0;font-size:14px;text-decoration:none;color:inherit"><span style="flex:1">${e.pn}${e.m?` <small style="color:var(--t2)">${e.m}</small>`:''}</span>${e.a?`<span>${fm(e.a)}</span>`:''}</a>`).join('')}</div></details>`};
 const today=`<div id="tlToday" style="display:flex;gap:10px;align-items:center;padding:8px 6px;margin:4px 0;background:#fdeef2;border-left:4px solid #D31145;border-radius:6px;font-weight:700;color:#D31145"><span style="min-width:86px">${D(T)}</span><span>📍</span><span>วันนี้</span></div>`;
 const past=R.filter(e=>e.d<T),fut=R.filter(e=>e.d>=T);
 const h=`<div class="net" style="margin-top:14px"><b style="color:var(--aia);font-size:17px">📅 Timeline ย้อนหลัง 3 เดือน · ล่วงหน้า 3 เดือน</b>

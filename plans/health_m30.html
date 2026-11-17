@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>แผนประกัน AIA</title>
+<link rel="icon" href="../icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="../icon.svg"><meta name="theme-color" content="#D31145"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/style.css"></head><body><div class="wrap">
+
+<div class="hd"><div><h1>🩺 สรุปแผนประกันสุขภาพ AIA</h1><p>เปรียบเทียบ 4 แผน เพื่อพิจารณาเลือก</p></div>
+<div class="cust" id="who" style="background:rgba(255,255,255,.18);padding:8px 14px;border-radius:20px;font-size:14px"></div></div>
+
+<div class="base"><span>📋 สัญญาหลัก (ทุนประกันขั้นต่ำ 100,000 บาท)</span><span>เบี้ย <b>2,150</b> บาท/ปี · รวมอยู่ในทุกแผน</span></div>
+
+<div class="warn">⏰ <b>Health Saver และ Health Happy เปิดขายถึง 30 พ.ย. 2569 เท่านั้น</b> — หลังจากนั้นจะปิดการขาย และจะมีแผนใหม่มาแทน ซึ่งอาจมี<b>ค่าใช้จ่ายร่วม (Co-payment) เป็น %</b></div>
+
+<div class="grid" id="grid"></div>
+<table id="tbl"></table>
+
+<div class="note" id="note"></div>
+
+<div class="net">
+ <b style="color:var(--aia);font-size:17px">🏥 รพ. เอกชนใน AIA Smart Network</b>
+ <div style="font-size:13px;color:var(--t2);margin:4px 0 10px">Health Starter: ใช้ รพ. ในเครือข่าย ไม่ต้องจ่ายร่วม · รวม <b>สถานพยาบาลของรัฐทุกแห่ง</b> (ประกาศ ณ 18 พ.ย. 2569)</div>
+ <input id="nq" placeholder="🔍 พิมพ์ชื่อ รพ. หรือจังหวัด เช่น บางปะกอก, เชียงใหม่" oninput="netR()">
+ <div id="nr" style="margin:8px 0"></div>
+ <div id="nc" style="font-size:12px;color:var(--t2);margin-bottom:6px"></div>
+ <div id="nl"></div>
+</div>
+
+</div>
+<script src="../data/customers.js"></script><script>(function(){const u=new URLSearchParams(location.search);if(!u.get("id")){u.set("id","m30-hlth");history.replaceState(null,"","?"+u)}})();</script><script src="../js/plan.js"></script><script src="../js/network.js"></script></body></html>

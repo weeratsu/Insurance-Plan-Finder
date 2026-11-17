@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>แก้ไข รพ. · AIA Smart Network</title><link rel="icon" href="icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>body,button,input,select{font-family:'Inter','Noto Sans Thai',sans-serif}.c{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px;margin-top:12px}
+.b{border:0;border-radius:10px;padding:9px 14px;font:inherit;font-weight:600;font-size:14px;cursor:pointer;background:#D31145;color:#fff}.b2{background:#fdeef2;color:#D31145;border:1px solid #f7c6d3}
+.tb{display:flex;gap:6px;flex-wrap:wrap;align-items:center}input,select{padding:7px 10px;border:1px solid #ddd;border-radius:8px;font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}th{background:#fdeef2;color:#D31145;padding:8px;text-align:left;position:sticky;top:0}td{padding:4px 6px;border-bottom:1px solid #eee}td input{width:100%;box-sizing:border-box}
+.x{background:none;border:0;cursor:pointer;font-size:16px}#msg{margin-top:8px;font-size:14px}</style></head>
+<body><div class="wrap home"><div class="hd"><div><h1>🏥 แก้ไขรายชื่อ รพ.</h1><p>AIA Smart Network</p></div></div>
+<div class="c"><div class="tb"><button class="b b2" onclick="exp()">⬇️ Export Excel</button><label class="b b2">⬆️ Import Excel<input type="file" accept=".xlsx,.xls" hidden onchange="imp(this.files[0]);this.value=''"></label>
+<span style="flex:1"></span>ประกาศ ณ <input id="dt" style="width:140px"></div>
+<div style="font-size:12px;color:#666;margin-top:6px">Excel คอลัมน์: <b>ภาค</b> · <b>ชื่อ</b> (เต็ม เช่น โรงพยาบาลกรุงเทพ) · <b>ใหม่</b> (Y = ป้าย NEW)</div></div>
+<div class="c"><div class="tb"><input id="q" placeholder="🔍 ค้นหา" oninput="draw()"><select id="rf" onchange="draw()"></select><span id="cnt" style="font-size:13px;color:#666"></span><span style="flex:1"></span><button class="b b2" onclick="add()">➕ เพิ่ม รพ.</button></div>
+<div style="max-height:60vh;overflow:auto"><table><thead><tr><th style="width:24%">ภาค</th><th>ชื่อ</th><th style="width:60px">NEW</th><th style="width:40px"></th></tr></thead><tbody id="tb"></tbody></table></div></div>
+<div class="c"><div class="tb"><button class="b" onclick="save()">💾 บันทึกลง js/network.js</button><button class="b b2" onclick="dl()">⬇️ ดาวน์โหลด network.js</button></div>
+<div style="font-size:12px;color:#666;margin-top:6px">💾 ใช้ Chrome/Edge บนคอม → เลือกโฟลเดอร์ Insurance Plan Finder → push · หรือดาวน์โหลดแล้ววางทับ js/network.js</div><div id="msg"></div></div></div>
+<script src="js/network.js"></script>
+<script>
+let R=[];for(const[r,s]of Object.entries(NET))s.split('|').forEach(x=>{const nw=x.endsWith('*');x=x.replace('*','');R.push({r,n:x.startsWith('#')?x.slice(1):'โรงพยาบาล'+x,w:nw})});
+dt.value=NET_DATE;const regs=()=>[...new Set(R.map(o=>o.r))];
+function draw(){const q=q_.value.trim().toLowerCase(),f=rf.value;const ro=regs();rf.innerHTML=['ทั้งหมด',...ro].map(r=>`<option${r===f?' selected':''}>${r}</option>`).join('');
+ const L=R.map((o,i)=>[o,i]).filter(([o])=>(!f||f==='ทั้งหมด'||o.r===f)&&(!q||(o.n+o.r).toLowerCase().includes(q)));cnt.textContent=L.length+' / '+R.length+' แห่ง';
+ tb.innerHTML=L.map(([o,i])=>`<tr><td><input list="rl" value="${o.r}" onchange="R[${i}].r=this.value.trim()"></td><td><input value="${o.n.replace(/"/g,'&quot;')}" onchange="R[${i}].n=this.value.trim()"></td><td style="text-align:center"><input type="checkbox" ${o.w?'checked':''} onchange="R[${i}].w=this.checked" style="width:auto"></td><td><button class="x" onclick="if(confirm('ลบ '+R[${i}].n+'?')){R.splice(${i},1);draw()}">🗑</button></td></tr>`).join('')+`<datalist id="rl">${ro.map(r=>`<option value="${r}">`).join('')}</datalist>`}
+const q_=document.getElementById('q');
+function add(){const f=rf.value;R.unshift({r:f&&f!=='ทั้งหมด'?f:regs()[0],n:'โรงพยาบาล',w:true});q_.value='';draw()}
+function exp(){const ws=XLSX.utils.json_to_sheet(R.map(o=>({'ภาค':o.r,'ชื่อ':o.n,'ใหม่':o.w?'Y':''})));ws['!cols']=[{wch:24},{wch:50},{wch:6}];const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Hospitals');XLSX.writeFile(wb,'aia_smart_network.xlsx')}
+async function imp(file){if(!file)return;try{const wb=XLSX.read(await file.arrayBuffer());const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+ const N=rows.map(x=>({r:String(x['ภาค']).trim(),n:String(x['ชื่อ']).trim(),w:/^(y|yes|1|ใช่|new)$/i.test(String(x['ใหม่']).trim())})).filter(o=>o.r&&o.n);
+ if(!N.length)throw new Error('ไม่พบข้อมูล (ต้องมีคอลัมน์ ภาค, ชื่อ)');if(!confirm(`นำเข้า ${N.length} แห่ง แทนที่รายการเดิม ${R.length} แห่ง?`))return;R=N;draw();msg.innerHTML='✅ นำเข้าแล้ว — กด 💾 บันทึก'}catch(e){msg.innerHTML='❌ '+e.message}}
+function _unused(){const g={};R.filter(o=>o.r&&o.n).forEach(o=>{const nm=o.n.startsWith('โรงพยาบาล')?o.n.slice(9):'#'+o.n;(g[o.r]=g[o.r]||[]).push(nm+(o.w?'*':''))});
+ const d={};for(const k in g)d[k]=g[k].join('|');let src=document.querySelector('script[src="js/network.js"]');return null}
+let SRC='';fetch('js/network.js',{cache:'no-store'}).then(r=>r.text()).then(t=>SRC=t).catch(()=>{});
+function out(){const g={};R.filter(o=>o.r&&o.n).forEach(o=>{const nm=o.n.startsWith('โรงพยาบาล')?o.n.slice(9):'#'+o.n;(g[o.r]=g[o.r]||[]).push(nm+(o.w?'*':''))});
+ const d={};for(const k in g)d[k]=g[k].join('|');const i=SRC.indexOf('let NREG=');if(!SRC||i<0)throw new Error('อ่าน js/network.js เดิมไม่ได้ (เปิดผ่านเว็บ/เซิร์ฟเวอร์)');
+ return 'const NET='+JSON.stringify(d,null,0)+';\nvar NET_DATE='+JSON.stringify(dt.value.trim()||NET_DATE)+';\n'+SRC.slice(i)}
+function dl(){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([out()],{type:'text/javascript'}));a.download='network.js';a.click()}catch(e){msg.innerHTML='❌ '+e.message}}
+const IDB=()=>new Promise((ok,no)=>{const r=indexedDB.open('ipf_fs',1);r.onupgradeneeded=()=>r.result.createObjectStore('h');r.onsuccess=()=>ok(r.result);r.onerror=no});
+async function idb(k,v){const d=await IDB();return new Promise(ok=>{const t=d.transaction('h',v===undefined?'readonly':'readwrite').objectStore('h');const q=v===undefined?t.get(k):t.put(v,k);q.onsuccess=()=>ok(q.result);q.onerror=()=>ok(null)})}
+async function save(){try{if(!window.showDirectoryPicker)throw new Error('เบราว์เซอร์นี้ไม่รองรับ ใช้ปุ่มดาวน์โหลดแทน');const txt=out();let D=await idb('dir');
+ if(!D||(await D.queryPermission({mode:'readwrite'})!=='granted'&&await D.requestPermission({mode:'readwrite'})!=='granted')){D=await showDirectoryPicker({mode:'readwrite'});await idb('dir',D)}
+ const js=await D.getDirectoryHandle('js');const w=await(await js.getFileHandle('network.js')).createWritable();await w.write(txt);await w.close();SRC=txt;
+ msg.innerHTML=`✅ บันทึก ${R.length} แห่งลง js/network.js แล้ว → push ด้วย GitHub Desktop`}catch(e){if(e.name!=='AbortError')msg.innerHTML='❌ '+(e.name==='NotFoundError'?'ไม่พบ js/network.js — เลือกโฟลเดอร์ Insurance Plan Finder':e.message)}}
+draw();
+</script><script src="js/admin-nav.js"></script></body></html>
