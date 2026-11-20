@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ลูกค้าปัจจุบัน · Insurance Plan Finder</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml"><meta name="theme-color" content="#D31145">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+body{font-family:'Inter','Noto Sans Thai',sans-serif;background:#f7f7f9;margin:0;color:#1f2937}
+.w{max-width:1100px;margin:0 auto;padding:16px}
+.hd{background:#D31145;color:#fff;border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.hd h1{margin:0;font-size:20px}.hd p{margin:4px 0 0;font-size:13px;opacity:.9}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:14px 0}.k{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px}.k .l{font-size:12px;color:#6b7280}.k .v{font-size:22px;font-weight:700}.k .s{font-size:12px;color:#6b7280}
+.c{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.ch{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}.ch a{color:#D31145;font-weight:700;text-decoration:none;font-size:16px}
+table{width:100%;border-collapse:collapse;font-size:14px}th{text-align:left;color:#6b7280;font-size:12px;font-weight:600;padding:7px 8px;border-bottom:2px solid #e5e7eb;white-space:nowrap}td{padding:8px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+.b{border:0;border-radius:8px;padding:6px 11px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}.bp{background:#D31145;color:#fff}.bg{background:#f3f4f6}.ib{border:0;background:#f3f4f6;border-radius:6px;padding:4px 8px;cursor:pointer}
+.chip{border:1px solid #e5e7eb;background:#fff;border-radius:16px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer}.chip.on{background:#D31145;border-color:#D31145;color:#fff}
+input,select,textarea{width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font:inherit;background:#fff}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:99;padding:16px}
+.fm{background:#fff;border-radius:14px;max-width:440px;width:100%;max-height:92vh;display:flex;flex-direction:column;overflow:hidden}
+.fm .t{background:#D31145;color:#fff;padding:12px 16px;font-weight:700}.fm .bdy{padding:16px;display:grid;gap:10px;font-size:14px;overflow:auto}.fm .ft{display:flex;justify-content:space-between;padding:12px 16px;border-top:1px solid #e5e7eb}
+.hist td{font-size:13px;background:#fafafa}.sm{font-size:12px;color:#6b7280}
+@media print{.b,.ib,#flt,#anav{display:none!important}body{background:#fff}}
+</style></head><body><div class="w">
+<div class="hd"><div><h1>💰 ลูกค้าปัจจุบัน</h1><p>เฉพาะลูกค้าที่ซื้อแล้ว · สถานะงวด · วันครบกำหนด · บันทึกการจ่าย</p></div></div>
+<div id="st" class="sm" style="margin-top:8px"></div>
+<div id="kp" class="kp"></div>
+<div id="flt" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px"></div>
+<div id="app"></div></div>
+<div class="ov" id="ov"><form class="fm" id="fm" onsubmit="return false"></form></div>
+<script src="data/customers.js"></script><script src="js/config-sheet.js" onerror=""></script><script src="js/pay.js"></script>
+<script>
+const LS='ipf_customers_v1',Q=new URLSearchParams(location.search),ONE=Q.get('id');
+const f=n=>n==null||n===''?'-':(+n).toLocaleString('en-US',{maximumFractionDigits:2}),D=IPFPAY.dT,PY=IPFPAY;
+(function(){try{const s=JSON.parse(localStorage.getItem('ipf_sheet_cfg')||'null');if(s&&s.endpoint&&s.token&&!(window.IPF_SHEET&&window.IPF_SHEET.token))window.IPF_SHEET=s}catch(e){}})();
+let L=JSON.parse(localStorage.getItem(LS)||'[]'),ok=false,F=ONE?'all':(localStorage.getItem('ipf_cc_f')||'all'),OPEN=new Set();
+async function api(b){const W=window.IPF_SHEET;if(!W||!W.endpoint||!W.token)throw new Error('no config');b.token=W.token;let last;for(const w of [0,2500]){if(w)await new Promise(r=>setTimeout(r,w));try{const r=await fetch(W.endpoint,{method:'POST',body:JSON.stringify(b)});const j=await r.json();if(!j.ok)throw new Error(j.error||'API');return j}catch(e){last=e}}throw last}
+async function save(){localStorage.setItem(LS,JSON.stringify(L));draw();if(!ok){st.textContent='⚠️ บันทึกเฉพาะในเครื่อง (ยังไม่ได้เชื่อม Sheet)';return}st.textContent='⏳ กำลังบันทึก…';try{await api({action:'save',rows:L});st.textContent='✅ บันทึกลง Sheet แล้ว'}catch(e){st.textContent='⚠️ บันทึก Sheet ไม่สำเร็จ: '+e.message}}
+/* popup (same style as other admin pages) */
+(function(){const s=document.createElement('style');s.textContent=`#pp{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}#pp .bx{background:#fff;border-radius:14px;max-width:360px;width:100%;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25)}#pp .ph{background:#D31145;color:#fff;padding:12px 16px;font-weight:700}#pp .pb{padding:18px 16px;font-size:15px;line-height:1.5}#pp .pf{display:flex;justify-content:flex-end;gap:8px;padding:0 16px 16px}#pp button{border:0;border-radius:8px;padding:9px 18px;font:inherit;cursor:pointer}#pp .ok{background:#D31145;color:#fff}#pp .cc{background:#eee}`;document.head.appendChild(s);
+const d=document.createElement('div');d.id='pp';d.innerHTML='<div class="bx"><div class="ph" id="ppt"></div><div class="pb" id="ppm"></div><div class="pf"><button class="cc" id="ppc">ยกเลิก</button><button class="ok" id="ppo">ตกลง</button></div></div>';document.body.appendChild(d)})();
+function popup(msg,{title='แจ้งเตือน',confirm=false}={}){return new Promise(r=>{const p=document.getElementById('pp');ppt.textContent=title;ppm.textContent=msg;ppc.style.display=confirm?'':'none';p.style.display='flex';const done=v=>{p.style.display='none';document.removeEventListener('keydown',k);r(v)};const k=e=>{if(e.key==='Enter')done(true);if(e.key==='Escape')done(false)};ppo.onclick=()=>done(true);ppc.onclick=()=>done(false);p.onclick=e=>{if(e.target===p)done(false)};document.addEventListener('keydown',k);ppo.focus()})}
+function age(c){if(!c.dob)return c.age;const b=new Date(c.dob),t=new Date();let a=t.getFullYear()-b.getFullYear();if(t<new Date(t.getFullYear(),b.getMonth(),b.getDate()))a--;return a}
+/* items to collect = each book (main + its riders) + riders not in a book */
+function items(c){const A=PY.list(c).filter(PY.live),G=PY.books(A);
+ return [...G.books.map(b=>({c,x:b.main,riders:b.riders,tot:(+b.main.prem||0)+b.riders.reduce((s,r)=>s+(+r.prem||0),0)})),...G.rest.map(r=>({c,x:r,riders:[],tot:+r.prem||0}))]
+  .map(o=>{const s=PY.status(o.x),fac=(PY.MODES[o.x.mode||'y']||PY.MODES.y)[2];o.s=s;o.inst=Math.round(o.tot*fac*100)/100;return o})}
+function custs(){return L.filter(c=>PY.list(c).some(PY.live)&&(!ONE||c.id===ONE))}
+const in30=o=>o.s.next&&(o.s.next-PY.today())/864e5<=30;
+const FL=[['all','ทั้งหมด',()=>true],['late','🔴 เลยกำหนด',o=>o.s.s==='late'],['due','🟡 รอชำระ',o=>o.s.s==='due'],['soon','📅 ครบกำหนดใน 30 วัน',o=>in30(o)&&o.s.s!=='done'],['paid','✅ จ่ายแล้ว',o=>o.s.s==='paid'],['nolog','⚪ ยังไม่มีบันทึก',o=>o.s.s==='nolog']];
+function draw(){const C=custs(),all=C.flatMap(items),q=(document.getElementById('cq')||{}).value||'';
+ const late=all.filter(o=>o.s.s==='late'),due=all.filter(o=>o.s.s==='due'),soon=all.filter(o=>in30(o)&&o.s.s!=='done');
+ kp.innerHTML=`<div class="k"><div class="l">ลูกค้าปัจจุบัน</div><div class="v">${C.length} คน</div><div class="s">${all.length} เล่ม/สัญญาที่ต้องเก็บเบี้ย</div></div>
+ <div class="k"><div class="l">🔴 เลยกำหนด (เกิน ${PY.GRACE} วัน)</div><div class="v" style="color:#b91c1c">${late.length}</div><div class="s">${f(late.reduce((s,o)=>s+o.inst*Math.max(1,o.s.unpaid.length),0))} บาท</div></div>
+ <div class="k"><div class="l">🟡 รอชำระ (ในระยะผ่อนผัน)</div><div class="v" style="color:#a16207">${due.length}</div><div class="s">${f(due.reduce((s,o)=>s+o.inst,0))} บาท</div></div>
+ <div class="k"><div class="l">📅 ครบกำหนดใน 30 วัน</div><div class="v">${soon.length}</div><div class="s">${f(soon.reduce((s,o)=>s+o.inst,0))} บาท</div></div>`;
+ flt.innerHTML=(ONE?`<a href="current_customers.html" class="chip" style="text-decoration:none;color:inherit">← ดูลูกค้าทั้งหมด</a>`:'')+FL.map(([k,l,fn])=>`<button class="chip ${F===k?'on':''}" onclick="F='${k}';localStorage.setItem('ipf_cc_f',F);draw()">${l} (${all.filter(fn).length})</button>`).join('')+`<input id="cq" placeholder="🔍 ค้นหาชื่อ / เลขกรมธรรม์" value="${q.replace(/"/g,'&quot;')}" oninput="draw();this.focus();this.setSelectionRange(this.value.length,this.value.length)" style="flex:1 1 200px;width:auto">`;
+ const fn=FL.find(x=>x[0]===F)[2],ql=q.trim().toLowerCase();
+ const rows=C.map(c=>({c,I:items(c).filter(o=>fn(o)&&(!ql||[(c.name||''),o.x.name||'',o.x.no||''].join(' ').toLowerCase().includes(ql)))})).filter(r=>r.I.length)
+  .sort((a,b)=>Math.min(...a.I.map(o=>+(o.s.next||8.64e15)))-Math.min(...b.I.map(o=>+(o.s.next||8.64e15))));
+ if(!C.length){app.innerHTML='<div class="c" style="color:#6b7280">ยังไม่มีลูกค้าที่ซื้อแล้ว · เพิ่มกรมธรรม์ได้ที่หน้าลูกค้า (📄 กรมธรรม์)</div>';return}
+ app.innerHTML=rows.length?rows.map(({c,I})=>`<div class="c"><div class="ch"><a href="customer.html?id=${encodeURIComponent(c.id)}">${c.icon||'👤'} ${c.name||'-'} 📂</a><span class="sm">${c.sex==='m'?'ชาย':'หญิง'} ${age(c)??'-'} ปี</span></div>
+ <div style="overflow-x:auto"><table><tr><th>เล่ม / สัญญา</th><th>งวด · ยอดต่องวด</th><th>งวดนี้ (ครบกำหนด)</th><th>สถานะ</th><th>งวดถัดไป</th><th>จ่ายถึงงวด</th><th>จ่ายล่าสุด</th><th></th></tr>
+ ${I.map(o=>{const x=o.x,s=o.s,k=PY.uid(x),op=OPEN.has(k),H=(x.pay||[]).slice().sort((a,b)=>a.due<b.due?1:-1);
+  return `<tr><td><b>${x.name||'-'}</b>${o.riders.length?`<br><span class="sm">+ ${o.riders.map(r=>r.name||'-').join(', ')}</span>`:''}${x.no?`<br><span class="sm">เลขที่ ${x.no}</span>`:''}</td>
+  <td>${PY.MODES[x.mode||'y'][0]}<br><span class="sm">${f(o.inst)} บาท${o.riders.length?' (รวมสัญญาเพิ่มเติม)':''}</span></td>
+  <td>${D(s.cur)}</td><td>${PY.badge(s.s)}${s.unpaid&&s.unpaid.length?`<br><span class="sm" style="color:${s.s==='late'?'#b91c1c':'#a16207'}">ค้าง ${s.unpaid.length} งวด · ${s.days} วัน${s.s==='due'&&s.grace?' · ผ่อนผันถึง '+D(s.grace):''}</span>`:''}</td>
+  <td>${D(s.next)}</td><td>${D(s.thru)}</td><td>${s.last?D(s.last.d)+`<br><span class="sm">${f(s.last.amt)} · ${PY.CH[s.last.ch]||''}</span>`:'-'}</td>
+  <td style="text-align:right"><button class="b bp" onclick="payF('${c.id}','${k}')">💰 จ่าย</button> <button class="b bg" onclick="tg('${k}')">📜 ${H.length} ${op?'▴':'▾'}</button></td></tr>
+  ${op?`<tr class="hist"><td colspan="8">${H.length?`<table><tr><th>งวดที่ครบกำหนด</th><th>วันที่จ่าย</th><th>ยอด</th><th>ช่องทาง</th><th>หมายเหตุ</th><th></th></tr>${H.map(p=>`<tr><td>${D(p.due)}</td><td>${D(p.d)}</td><td>${f(p.amt)}</td><td>${PY.CH[p.ch]||'-'}</td><td>${(p.rm||'').replace(/</g,'&lt;')}</td><td style="text-align:right;white-space:nowrap"><button class="ib" onclick="payF('${c.id}','${k}','${p.id}')">✏️</button> <button class="ib" onclick="payD('${c.id}','${k}','${p.id}')">🗑</button></td></tr>`).join('')}</table>`:'<span class="sm">ยังไม่มีบันทึกการจ่าย</span>'}</td></tr>`:''}`}).join('')}</table></div></div>`).join(''):'<div class="c" style="color:#6b7280">ไม่พบรายการตามตัวกรอง</div>'}
+function tg(k){OPEN.has(k)?OPEN.delete(k):OPEN.add(k);draw()}
+function find(cid,k){const c=L.find(x=>x.id===cid);const o=c&&items(c).find(o=>o.x.uid===k);return{c,o}}
+const PM2CH={card:'card',bank:'bank',transfer:'transfer',counter:'counter',cash:'cash'};
+function payF(cid,k,pid){const{c,o}=find(cid,k);if(!o)return;const x=o.x,p=pid?(x.pay||[]).find(y=>y.id===pid):null,s=o.s;
+ const paid=new Set((x.pay||[]).map(y=>y.due)),DU=PY.dues(x).map(PY.iso).reverse();
+ const def=p?p.due:PY.iso(s.unpaid&&s.unpaid.length?s.unpaid[s.unpaid.length-1]:(s.s==='nolog'||!s.curPaid?s.cur:(s.nextFut||s.cur)));
+ const lastCh=((x.pay||[]).slice(-1)[0]||{}).ch||PM2CH[x.pm]||'transfer';
+ fm.innerHTML=`<div class="t">${p?'✏️ แก้ไขการจ่าย':'💰 บันทึกการจ่าย'} · ${c.name||'-'}</div><div class="bdy">
+ <div class="sm"><b style="color:#111">${x.name||'-'}</b>${x.no?' · '+x.no:''}${o.riders.length?'<br>รวม '+o.riders.map(r=>r.name).join(', '):''}</div>
+ <label>งวดที่ครบกำหนด<select id="p_due">${DU.map(d=>`<option value="${d}" ${d===def?'selected':''}>${D(d)}${paid.has(d)&&(!p||p.due!==d)?' · ✅ จ่ายแล้ว':''}</option>`).join('')}</select></label>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><label>วันที่จ่าย<input id="p_d" type="date" value="${p?p.d:PY.iso(PY.today())}"></label><label>ยอด (บาท)<input id="p_a" type="number" step="0.01" value="${p?p.amt:o.inst}"></label></div>
+ <label>ช่องทาง<select id="p_c">${Object.entries(PY.CH).map(([k2,v])=>`<option value="${k2}" ${(p?p.ch:lastCh)===k2?'selected':''}>${v}</option>`).join('')}</select></label>
+ <label>หมายเหตุ<input id="p_r" value="${p?(p.rm||'').replace(/"/g,'&quot;'):''}" placeholder="เช่น เลขใบเสร็จ"></label></div>
+ <div class="ft"><button type="button" class="b bg" onclick="ov.style.display='none'">ยกเลิก</button><button type="button" class="b bp" onclick="paySv('${cid}','${k}','${pid||''}')">✓ บันทึก</button></div>`;ov.style.display='flex'}
+async function paySv(cid,k,pid){const{c,o}=find(cid,k);if(!o)return;const x=o.x;x.pay=x.pay||[];
+ const r={id:pid||Date.now().toString(36),due:p_due.value,d:p_d.value,amt:+p_a.value||0,ch:p_c.value,rm:p_r.value.trim()};
+ if(!r.d){popup('กรุณาใส่วันที่จ่าย',{title:'⚠️ ข้อมูลไม่ครบ'});return}
+ const dup=x.pay.find(y=>y.due===r.due&&y.id!==r.id);
+ if(dup&&!await popup(`งวด ${D(r.due)} มีบันทึกการจ่ายแล้ว (${D(dup.d)} · ${f(dup.amt)}) ต้องการบันทึกเพิ่มอีกรายการไหม?`,{title:'⚠️ งวดนี้จ่ายแล้ว',confirm:true}))return;
+ const i=x.pay.findIndex(y=>y.id===r.id);if(i>=0)x.pay[i]=r;else x.pay.push(r);OPEN.add(k);ov.style.display='none';save()}
+async function payD(cid,k,pid){const{o}=find(cid,k);if(!o)return;const p=(o.x.pay||[]).find(y=>y.id===pid);
+ if(!await popup(`ลบบันทึกการจ่ายงวด ${D(p&&p.due)} ใช่ไหม?`,{title:'🗑 ลบบันทึกการจ่าย',confirm:true}))return;o.x.pay=(o.x.pay||[]).filter(y=>y.id!==pid);save()}
+let dn=null;ov.addEventListener('mousedown',e=>dn=e.target);ov.onclick=e=>{if(e.target===ov&&dn===ov)ov.style.display='none'};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&ov.style.display==='flex'&&document.getElementById('pp').style.display!=='flex')ov.style.display='none'});
+draw();
+(async()=>{try{st.textContent='⏳ กำลังโหลดจาก Sheet…';const j=await api({action:'get'});if(j.rows&&j.rows.length){L=j.rows;localStorage.setItem(LS,JSON.stringify(L))}ok=true;st.textContent='✅ ซิงก์กับ Sheet แล้ว';draw()}catch(e){st.textContent='⚠️ ใช้ข้อมูลในเครื่อง ('+e.message+')'}})();
+</script><script src="js/admin-nav.js"></script>
+</body></html>
