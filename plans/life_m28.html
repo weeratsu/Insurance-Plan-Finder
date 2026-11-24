@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>แผนประกันชีวิต · ชาย 28 ปี</title>
+<link rel="icon" href="../icon.svg" type="image/svg+xml"><meta name="theme-color" content="#D31145">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head><body>
+<script>
+// ---- Customer data only. Layout lives in plan-template.js ----
+const CUST={name:"",icon:"👨",age:28,title:"แผนประกันชีวิต",taxNote:"ลดหย่อนภาษีตามใบเสนอ 8,224 บาท (ฐานภาษี 20%)"};
+const PLANS=[{"code": "20 Pay Life (NP)", "th": "เอไอเอ ตลอดชีพ ชำระเบี้ยประกันภัย 20 ปี (ไม่มีเงินปันผล) · 20PLNP", "type": "ตลอดชีพ", "sa": 100000, "prem": 2056, "payYears": 20, "startAge": 28, "tax": 8224, "taxRate": 20, "cover": "ตลอดชีพ ถึงอายุ 99 ปี", "cashNote": "ไม่มีเงินคืนระหว่างทาง · ครบสัญญาอายุ 99 รับ 100,000 บาท", "death": [100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000], "cash": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100000]}];
+</script>
+<script src="../plan-template.js?v=3"></script>
+
+<script>(function(){const SV=[0, 500, 1500, 2600, 3700, 5000, 6500, 7700, 9000, 10400, 11800, 13300, 14800, 16500, 18100, 19900, 21700, 23700, 25700, 27800, 28800, 29900, 31000, 32200, 33400, 34600, 35900, 37200, 38500, 39900, 41300, 42800, 44300, 45800, 47300, 48900, 50500, 52100, 53700, 55300, 56900, 58500, 60100, 61700, 63300, 64800, 66300, 67700, 69100, 70500, 71800, 73000, 74200, 75400, 76600, 77700, 78800, 79800, 80900, 82000, 83100, 84100, 85100, 86100, 87100, 88100, 89300, 90600, 92500, 95300, 100000],P=2056,A0=28,f=n=>Math.round(n).toLocaleString('en-US');try{if(window.IPF_setSV){const k=PLANS.findIndex(x=>Math.round(x.prem)===Math.round(P));IPF_setSV(k<0?0:k,SV)}}catch(e){}
+let be=null;const rows=SV.map((v,i)=>{const cp=P*Math.min(i+1,20),d=v-cp;if(be===null&&d>=0)be=A0+i;return{a:A0+i,cp,v,d,pc:cp?v/cp*100:0}});
+const tr=rows.map(r=>`<tr${r.a===be?' style="background:#dcfce7"':''}><td>${r.a}${r.a===be?' 🎯':''}</td><td>${f(r.cp)}</td><td>${r.v?f(r.v):'-'}</td><td style="color:${r.d>=0?'#16a34a':'#dc2626'};font-weight:600">${r.d>=0?'+':''}${f(r.d)}</td><td>${r.pc.toFixed(0)}%</td></tr>`).join('');
+const h=`<div class="sec"><h3>🔄 กรณีเวนคืนกรมธรรม์</h3>
+<div style="font-size:14px;line-height:1.7;margin-bottom:8px">🎯 เวนคืนแล้ว<b>ไม่ขาดทุนเมื่ออายุ ${be}</b> (ได้ ${f(SV[be-A0])} vs จ่าย ${f(P*20)}) · ก่อนหน้านั้นเวนคืนจะได้น้อยกว่าเบี้ยที่จ่าย</div>
+<details><summary style="cursor:pointer;color:var(--aia);font-weight:600">▶ ดูตารางเวนคืนรายปี</summary>
+<div style="font-size:12px;color:var(--t2);margin:6px 0">เงินค่าเวนคืน ณ ปีกรมธรรม์นั้น เทียบเบี้ยหลักสะสม (ไม่รวมสัญญาเพิ่มเติม)</div>
+<div style="overflow-x:auto"><table class="ft"><tr><th>อายุ</th><th>เบี้ยสะสม</th><th>เงินค่าเวนคืน</th><th>กำไร/ขาดทุน</th><th>% ของเบี้ย</th></tr>${tr}</table></div></details></div>`;
+const n=document.querySelector('.note')||document.getElementById('app');if(n)n.insertAdjacentHTML(n.classList&&n.classList.contains('note')?'beforebegin':'beforeend',h)})();</script>
+</body></html>
